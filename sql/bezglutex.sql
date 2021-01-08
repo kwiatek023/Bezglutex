@@ -1,6 +1,9 @@
-DROP DATABASE IF EXISTS bezglutex;
-CREATE DATABASE bezglutex;
-USE bezglutex;
+DROP
+DATABASE IF EXISTS bezglutex;
+CREATE
+DATABASE bezglutex;
+USE
+bezglutex;
 
 CREATE TABLE customers
 (
