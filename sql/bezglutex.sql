@@ -22,7 +22,7 @@ CREATE TABLE orders
     order_id    INT     NOT NULL AUTO_INCREMENT,
     customer_id INT     NOT NULL,
     date        DATE,
-    payment     ENUM ('bank_transfer', 'on_delivery') NOT NULL,
+    payment     ENUM ('bank transfer', 'on delivery') NOT NULL,
     realized    BOOLEAN NOT NULL,
 
     PRIMARY KEY (order_id),
@@ -57,7 +57,7 @@ CREATE TABLE breadstuff
     type               ENUM ('baguette', 'white bread',
         'dark bread', 'granary bread',
         'toasted bread', 'kaiser roll',
-        'ciabatta', 'other') NOT NULL,
+        'ciabatta') NOT NULL,
 
     netto_weight       INT NOT NULL,
     pieces_per_package INT NOT NULL,
@@ -74,7 +74,7 @@ CREATE TABLE pasta
 (
     product_id   INT NOT NULL,
     type         ENUM ('penne', 'filini', 'pipette',
-        'spaghetti', 'conchiglie', 'other') NOT NULL,
+        'spaghetti', 'conchiglie') NOT NULL,
 
     netto_weight INT NOT NULL,
     energy_value INT NOT NULL,
@@ -131,7 +131,7 @@ CREATE TABLE supplies
     supply_id   INT  NOT NULL AUTO_INCREMENT,
     supplier_id INT  NOT NULL,
     date        DATE NOT NULL,
-    payment     ENUM ('bank_transfer', 'on_delivery') NOT NULL,
+    payment     ENUM ('bank transfer', 'on delivery') NOT NULL,
 
     PRIMARY KEY (supply_id),
     CONSTRAINT supplies_suppliers_fk FOREIGN KEY (supplier_id) REFERENCES suppliers (supplier_id)
@@ -153,7 +153,7 @@ CREATE TABLE users
 (
     user_id  INT         NOT NULL AUTO_INCREMENT,
     login    VARCHAR(45) NOT NULL,
-    password VARCHAR(20) NOT NULL,
+    password VARCHAR(40) NOT NULL,
     type     ENUM ('sales_man', 'admin', 'store_keeper', 'store_manager') NOT NULL,
 
     PRIMARY KEY (user_id)
