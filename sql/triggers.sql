@@ -1,3 +1,5 @@
+USE bezglutex;
+
 DELIMITER $$
 CREATE OR REPLACE TRIGGER on_supplies_delete
     BEFORE DELETE

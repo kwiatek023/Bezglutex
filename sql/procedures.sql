@@ -1,3 +1,5 @@
+USE bezglutex;
+
 DELIMITER $$
 CREATE OR REPLACE FUNCTION realize_order(_order_id INT) RETURNS BOOLEAN
 BEGIN
