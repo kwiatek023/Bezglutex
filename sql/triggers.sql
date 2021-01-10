@@ -1,15 +1,11 @@
 USE bezglutex;
 
 DELIMITER $$
-CREATE OR REPLACE TRIGGER on_supplies_delete
+CREATE OR REPLACE TRIGGER on_supplies_before_delete
     BEFORE DELETE
     ON supplies
     FOR EACH ROW
 BEGIN
-    IF (SELECT COUNT(*) FROM supplies WHERE supplier_id = OLD.supplier_id) <= 1 THEN
-        DELETE FROM suppliers WHERE suppliers.supplier_id = OLD.supplier_id;
-    END IF;
-
     UPDATE storage s
         JOIN supplies_products sp ON s.product_id = sp.product_id
     SET s.quantity = s.quantity - sp.quantity
@@ -18,6 +14,19 @@ BEGIN
     DELETE
     FROM supplies_products
     WHERE supplies_products.supply_id = OLD.supply_id;
+END;
+$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE OR REPLACE TRIGGER on_supplies_after_delete
+    AFTER DELETE
+    ON supplies
+    FOR EACH ROW
+BEGIN
+    IF (SELECT COUNT(*) FROM supplies WHERE supplier_id = OLD.supplier_id) <= 0 THEN
+        DELETE FROM suppliers WHERE suppliers.supplier_id = OLD.supplier_id;
+    END IF;
 END;
 $$
 DELIMITER ;
