@@ -1,24 +1,12 @@
-package entities;
+package database.entities;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "orders_products", schema = "bezglutex")
-@IdClass(OrdersProductsEntityPK.class)
-public class OrdersProductsEntity {
-  private int orderId;
+@Table(name = "storage", schema = "bezglutex")
+public class StorageEntity {
   private int productId;
   private int quantity;
-
-  @Id
-  @Column(name = "order_id", nullable = false)
-  public int getOrderId() {
-    return orderId;
-  }
-
-  public void setOrderId(int orderId) {
-    this.orderId = orderId;
-  }
 
   @Id
   @Column(name = "product_id", nullable = false)
@@ -45,9 +33,8 @@ public class OrdersProductsEntity {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    OrdersProductsEntity that = (OrdersProductsEntity) o;
+    StorageEntity that = (StorageEntity) o;
 
-    if (orderId != that.orderId) return false;
     if (productId != that.productId) return false;
     if (quantity != that.quantity) return false;
 
@@ -56,8 +43,7 @@ public class OrdersProductsEntity {
 
   @Override
   public int hashCode() {
-    int result = orderId;
-    result = 31 * result + productId;
+    int result = productId;
     result = 31 * result + quantity;
     return result;
   }

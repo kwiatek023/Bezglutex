@@ -1,23 +1,23 @@
-package entities;
+package database.entities;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "supplies_products", schema = "bezglutex")
-@IdClass(SuppliesProductsEntityPK.class)
-public class SuppliesProductsEntity {
-  private int supplyId;
+@Table(name = "orders_products", schema = "bezglutex")
+@IdClass(OrdersProductsEntityPK.class)
+public class OrdersProductsEntity {
+  private int orderId;
   private int productId;
   private int quantity;
 
   @Id
-  @Column(name = "supply_id", nullable = false)
-  public int getSupplyId() {
-    return supplyId;
+  @Column(name = "order_id", nullable = false)
+  public int getOrderId() {
+    return orderId;
   }
 
-  public void setSupplyId(int supplyId) {
-    this.supplyId = supplyId;
+  public void setOrderId(int orderId) {
+    this.orderId = orderId;
   }
 
   @Id
@@ -45,9 +45,9 @@ public class SuppliesProductsEntity {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    SuppliesProductsEntity that = (SuppliesProductsEntity) o;
+    OrdersProductsEntity that = (OrdersProductsEntity) o;
 
-    if (supplyId != that.supplyId) return false;
+    if (orderId != that.orderId) return false;
     if (productId != that.productId) return false;
     if (quantity != that.quantity) return false;
 
@@ -56,7 +56,7 @@ public class SuppliesProductsEntity {
 
   @Override
   public int hashCode() {
-    int result = supplyId;
+    int result = orderId;
     result = 31 * result + productId;
     result = 31 * result + quantity;
     return result;

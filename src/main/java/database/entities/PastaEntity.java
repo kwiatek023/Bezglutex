@@ -1,15 +1,17 @@
-package entities;
+package database.entities;
 
+import database.PastaType;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "breadstuff", schema = "bezglutex")
-public class BreadstuffEntity {
+@Table(name = "pasta", schema = "bezglutex")
+public class PastaEntity {
   private int productId;
-  private Object type;
+  @Enumerated(EnumType.STRING)
+  private PastaType type;
   private int nettoWeight;
-  private int piecesPerPackage;
   private int energyValue;
+  private int boilTime;
 
   @Id
   @Column(name = "product_id", nullable = false)
@@ -23,11 +25,11 @@ public class BreadstuffEntity {
 
   @Basic
   @Column(name = "type", nullable = false)
-  public Object getType() {
+  public PastaType getType() {
     return type;
   }
 
-  public void setType(Object type) {
+  public void setType(PastaType type) {
     this.type = type;
   }
 
@@ -42,16 +44,6 @@ public class BreadstuffEntity {
   }
 
   @Basic
-  @Column(name = "pieces_per_package", nullable = false)
-  public int getPiecesPerPackage() {
-    return piecesPerPackage;
-  }
-
-  public void setPiecesPerPackage(int piecesPerPackage) {
-    this.piecesPerPackage = piecesPerPackage;
-  }
-
-  @Basic
   @Column(name = "energy_value", nullable = false)
   public int getEnergyValue() {
     return energyValue;
@@ -61,17 +53,27 @@ public class BreadstuffEntity {
     this.energyValue = energyValue;
   }
 
+  @Basic
+  @Column(name = "boil_time", nullable = false)
+  public int getBoilTime() {
+    return boilTime;
+  }
+
+  public void setBoilTime(int boilTime) {
+    this.boilTime = boilTime;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    BreadstuffEntity that = (BreadstuffEntity) o;
+    PastaEntity that = (PastaEntity) o;
 
     if (productId != that.productId) return false;
     if (nettoWeight != that.nettoWeight) return false;
-    if (piecesPerPackage != that.piecesPerPackage) return false;
     if (energyValue != that.energyValue) return false;
+    if (boilTime != that.boilTime) return false;
     if (type != null ? !type.equals(that.type) : that.type != null) return false;
 
     return true;
@@ -82,8 +84,8 @@ public class BreadstuffEntity {
     int result = productId;
     result = 31 * result + (type != null ? type.hashCode() : 0);
     result = 31 * result + nettoWeight;
-    result = 31 * result + piecesPerPackage;
     result = 31 * result + energyValue;
+    result = 31 * result + boilTime;
     return result;
   }
 }

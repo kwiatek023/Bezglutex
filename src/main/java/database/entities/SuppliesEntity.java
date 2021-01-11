@@ -1,5 +1,6 @@
-package entities;
+package database.entities;
 
+import database.PaymentType;
 import javax.persistence.*;
 import java.sql.Date;
 
@@ -8,7 +9,8 @@ import java.sql.Date;
 public class SuppliesEntity {
   private int supplyId;
   private Date date;
-  private Object payment;
+  @Enumerated(EnumType.STRING)
+  private PaymentType payment;
 
   @Id
   @Column(name = "supply_id", nullable = false)
@@ -32,11 +34,11 @@ public class SuppliesEntity {
 
   @Basic
   @Column(name = "payment", nullable = false)
-  public Object getPayment() {
+  public PaymentType getPayment() {
     return payment;
   }
 
-  public void setPayment(Object payment) {
+  public void setPayment(PaymentType payment) {
     this.payment = payment;
   }
 

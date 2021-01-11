@@ -11,17 +11,17 @@
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.dialect">org.hibernate.dialect.MariaDBDialect</property>
         <property name="hibernate.connection.characterEncoding">utf8</property>
-        <mapping class="entities.BreadstuffEntity"/>
-        <mapping class="entities.CustomersEntity"/>
-        <mapping class="entities.DessertsEntity"/>
-        <mapping class="entities.OrdersEntity"/>
-        <mapping class="entities.OrdersProductsEntity"/>
-        <mapping class="entities.PastaEntity"/>
-        <mapping class="entities.ProductsEntity"/>
-        <mapping class="entities.StorageEntity"/>
-        <mapping class="entities.SuppliersEntity"/>
-        <mapping class="entities.SuppliesEntity"/>
-        <mapping class="entities.SuppliesProductsEntity"/>
-        <mapping class="entities.UsersEntity"/>
+        <mapping class="database.entities.BreadstuffEntity"/>
+        <mapping class="database.entities.CustomersEntity"/>
+        <mapping class="database.entities.DessertsEntity"/>
+        <mapping class="database.entities.OrdersEntity"/>
+        <mapping class="database.entities.OrdersProductsEntity"/>
+        <mapping class="database.entities.PastaEntity"/>
+        <mapping class="database.entities.ProductsEntity"/>
+        <mapping class="database.entities.StorageEntity"/>
+        <mapping class="database.entities.SuppliersEntity"/>
+        <mapping class="database.entities.SuppliesEntity"/>
+        <mapping class="database.entities.SuppliesProductsEntity"/>
+        <mapping class="database.entities.UsersEntity"/>
     </session-factory>
 </hibernate-configuration>
