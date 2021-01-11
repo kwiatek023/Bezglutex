@@ -4,11 +4,10 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "orders_products", schema = "bezglutex")
-@IdClass(OrdersProductsEntityPK.class)
 public class OrdersProductsEntity {
   private int orderId;
-  private int productId;
   private int quantity;
+  private ProductsEntity productsEntity;
 
   @Id
   @Column(name = "order_id", nullable = false)
@@ -18,16 +17,6 @@ public class OrdersProductsEntity {
 
   public void setOrderId(int orderId) {
     this.orderId = orderId;
-  }
-
-  @Id
-  @Column(name = "product_id", nullable = false)
-  public int getProductId() {
-    return productId;
-  }
-
-  public void setProductId(int productId) {
-    this.productId = productId;
   }
 
   @Basic
@@ -40,6 +29,16 @@ public class OrdersProductsEntity {
     this.quantity = quantity;
   }
 
+  @ManyToOne
+  @JoinColumn(name = "product_id")
+  public ProductsEntity getProductsEntity() {
+    return productsEntity;
+  }
+
+  public void setProductsEntity(ProductsEntity productsEntity) {
+    this.productsEntity = productsEntity;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -48,7 +47,7 @@ public class OrdersProductsEntity {
     OrdersProductsEntity that = (OrdersProductsEntity) o;
 
     if (orderId != that.orderId) return false;
-    if (productId != that.productId) return false;
+    if (productsEntity != that.productsEntity) return false;
     if (quantity != that.quantity) return false;
 
     return true;
@@ -57,7 +56,7 @@ public class OrdersProductsEntity {
   @Override
   public int hashCode() {
     int result = orderId;
-    result = 31 * result + productId;
+    result = 31 * result + productsEntity.getProductId();
     result = 31 * result + quantity;
     return result;
   }

@@ -9,7 +9,6 @@ import java.sql.Date;
 public class SuppliesEntity {
   private int supplyId;
   private Date date;
-  @Enumerated(EnumType.STRING)
   private PaymentType payment;
 
   @Id
@@ -34,6 +33,7 @@ public class SuppliesEntity {
 
   @Basic
   @Column(name = "payment", nullable = false)
+  @Enumerated(EnumType.STRING)
   public PaymentType getPayment() {
     return payment;
   }

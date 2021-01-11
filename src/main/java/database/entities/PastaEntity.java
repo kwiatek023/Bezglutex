@@ -5,9 +5,8 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "pasta", schema = "bezglutex")
-public class PastaEntity {
+public class PastaEntity extends ProductsEntity {
   private int productId;
-  @Enumerated(EnumType.STRING)
   private PastaType type;
   private int nettoWeight;
   private int energyValue;
@@ -25,6 +24,7 @@ public class PastaEntity {
 
   @Basic
   @Column(name = "type", nullable = false)
+  @Enumerated(EnumType.STRING)
   public PastaType getType() {
     return type;
   }

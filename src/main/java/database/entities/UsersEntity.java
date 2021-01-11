@@ -9,10 +9,10 @@ public class UsersEntity {
   private int userId;
   private String login;
   private String password;
-  @Enumerated(EnumType.STRING)
   private UserType type;
 
   @Id
+  @GeneratedValue
   @Column(name = "user_id", nullable = false)
   public int getUserId() {
     return userId;
@@ -44,6 +44,7 @@ public class UsersEntity {
 
   @Basic
   @Column(name = "type", nullable = false)
+  @Enumerated(EnumType.STRING)
   public UserType getType() {
     return type;
   }

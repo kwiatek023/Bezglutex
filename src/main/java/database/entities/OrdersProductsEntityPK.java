@@ -1,15 +1,24 @@
 package database.entities;
 
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.persistence.Id;
 import java.io.Serializable;
 
+@Embeddable
 public class OrdersProductsEntityPK implements Serializable {
+  private static final long serialVersionUID = 1L;
   private int orderId;
   private int productId;
 
-  @Column(name = "order_id", nullable = false)
-  @Id
+  public OrdersProductsEntityPK() {
+  }
+
+  public OrdersProductsEntityPK(int orderId, int productId) {
+    this.orderId = orderId;
+    this.productId = productId;
+  }
+
   public int getOrderId() {
     return orderId;
   }
@@ -18,8 +27,6 @@ public class OrdersProductsEntityPK implements Serializable {
     this.orderId = orderId;
   }
 
-  @Column(name = "product_id", nullable = false)
-  @Id
   public int getProductId() {
     return productId;
   }
