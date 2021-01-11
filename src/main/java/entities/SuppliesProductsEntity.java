@@ -3,7 +3,7 @@ package entities;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "supplies_products", schema = "bezglutex", catalog = "")
+@Table(name = "supplies_products", schema = "bezglutex")
 @IdClass(SuppliesProductsEntityPK.class)
 public class SuppliesProductsEntity {
   private int supplyId;
