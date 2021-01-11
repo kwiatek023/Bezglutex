@@ -173,3 +173,21 @@ BEGIN
     WHERE user_id = _user_id;
 END $$
 DELIMITER ;
+
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE log_in_user(IN login VARCHAR(45), IN password VARCHAR(40), OUT result BOOLEAN)
+BEGIN
+    SET @_id = NULL;
+    SET @str = 'SELECT user_id INTO @_id FROM users WHERE login = ? AND password = SHA(?);';
+
+    PREPARE stmt FROM @str;
+    EXECUTE stmt USING login, password;
+    DEALLOCATE PREPARE stmt;
+
+    IF @_id IS NULL THEN
+        SET result = FALSE;
+    ELSE
+        SET result = TRUE;
+    END IF;
+END$$
+DELIMITER ;

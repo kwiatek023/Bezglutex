@@ -9,6 +9,8 @@ DROP USER IF EXISTS 'store_keeper'@'localhost';
 CREATE USER 'store_keeper'@'localhost' IDENTIFIED BY 'store_keeper';
 DROP USER IF EXISTS 'store_manager'@'localhost';
 CREATE USER 'store_manager'@'localhost' IDENTIFIED BY 'store_manager';
+DROP USER IF EXISTS 'login'@'localhost';
+CREATE USER 'login'@'localhost' IDENTIFIED BY 'login';
 
 #salesman
 GRANT SELECT, UPDATE ON orders TO 'salesman'@'localhost';
@@ -58,3 +60,7 @@ GRANT EXECUTE ON PROCEDURE add_desserts TO'store_manager'@'localhost';
 
 #admin
 GRANT ALL PRIVILEGES ON bezglutex.* TO 'admin'@'localhost';
+
+#login
+GRANT SELECT ON users TO 'login'@'localhost';
+GRANT EXECUTE ON PROCEDURE log_in_user TO 'login'@'localhost';

@@ -1,3 +1,4 @@
+DELETE FROM users;
 DELETE FROM supplies;
 DELETE FROM orders_products;
 DELETE FROM orders;
@@ -256,11 +257,13 @@ DELIMITER $$
 DROP PROCEDURE IF EXISTS create_users;
 CREATE PROCEDURE create_users()
 BEGIN
+    ALTER TABLE users AUTO_INCREMENT = 1;
+
     INSERT INTO users (login, password, type) VALUES
     ('zbigniew', 'qwerty', 'store_keeper'),
     ('maciej', 'maciej1', 'store_manager'),
     ('wiesia', 'wiesia1', 'sales_man'),
-    ('admin', 'admin', 'admin');
+    ('krzysztof', 'krzysztof1', 'admin');
 END$$
 DELIMITER ;
 
