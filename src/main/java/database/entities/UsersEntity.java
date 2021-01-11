@@ -1,5 +1,6 @@
-package entities;
+package database.entities;
 
+import database.UserType;
 import javax.persistence.*;
 
 @Entity
@@ -8,7 +9,8 @@ public class UsersEntity {
   private int userId;
   private String login;
   private String password;
-  private Object type;
+  @Enumerated(EnumType.STRING)
+  private UserType type;
 
   @Id
   @Column(name = "user_id", nullable = false)
@@ -42,11 +44,11 @@ public class UsersEntity {
 
   @Basic
   @Column(name = "type", nullable = false)
-  public Object getType() {
+  public UserType getType() {
     return type;
   }
 
-  public void setType(Object type) {
+  public void setType(UserType type) {
     this.type = type;
   }
 

@@ -1,21 +1,21 @@
-package entities;
+package database.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
 import java.io.Serializable;
 
-public class SuppliesProductsEntityPK implements Serializable {
-  private int supplyId;
+public class OrdersProductsEntityPK implements Serializable {
+  private int orderId;
   private int productId;
 
-  @Column(name = "supply_id", nullable = false)
+  @Column(name = "order_id", nullable = false)
   @Id
-  public int getSupplyId() {
-    return supplyId;
+  public int getOrderId() {
+    return orderId;
   }
 
-  public void setSupplyId(int supplyId) {
-    this.supplyId = supplyId;
+  public void setOrderId(int orderId) {
+    this.orderId = orderId;
   }
 
   @Column(name = "product_id", nullable = false)
@@ -33,9 +33,9 @@ public class SuppliesProductsEntityPK implements Serializable {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    SuppliesProductsEntityPK that = (SuppliesProductsEntityPK) o;
+    OrdersProductsEntityPK that = (OrdersProductsEntityPK) o;
 
-    if (supplyId != that.supplyId) return false;
+    if (orderId != that.orderId) return false;
     if (productId != that.productId) return false;
 
     return true;
@@ -43,7 +43,7 @@ public class SuppliesProductsEntityPK implements Serializable {
 
   @Override
   public int hashCode() {
-    int result = supplyId;
+    int result = orderId;
     result = 31 * result + productId;
     return result;
   }

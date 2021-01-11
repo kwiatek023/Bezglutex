@@ -1,5 +1,6 @@
-package entities;
+package database.entities;
 
+import database.ProductType;
 import javax.persistence.*;
 import java.math.BigDecimal;
 
@@ -7,7 +8,8 @@ import java.math.BigDecimal;
 @Table(name = "products", schema = "bezglutex")
 public class ProductsEntity {
   private int productId;
-  private Object type;
+  @Enumerated(EnumType.STRING)
+  private ProductType type;
   private BigDecimal price;
 
   @Id
@@ -22,11 +24,11 @@ public class ProductsEntity {
 
   @Basic
   @Column(name = "type", nullable = false)
-  public Object getType() {
+  public ProductType getType() {
     return type;
   }
 
-  public void setType(Object type) {
+  public void setType(ProductType type) {
     this.type = type;
   }
 
