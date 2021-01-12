@@ -63,4 +63,4 @@ GRANT ALL PRIVILEGES ON bezglutex.* TO 'admin'@'localhost';
 
 #login
 GRANT SELECT ON users TO 'login'@'localhost';
-GRANT EXECUTE ON PROCEDURE log_in_user TO 'login'@'localhost';
+GRANT EXECUTE ON PROCEDURE user_exists TO 'login'@'localhost';

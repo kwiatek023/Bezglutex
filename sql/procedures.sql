@@ -175,7 +175,7 @@ END $$
 DELIMITER ;
 
 DELIMITER $$
-CREATE OR REPLACE PROCEDURE log_in_user(IN login VARCHAR(45), IN password VARCHAR(40), OUT result BOOLEAN)
+CREATE OR REPLACE PROCEDURE user_exists(IN login VARCHAR(45), IN password VARCHAR(40), OUT result BOOLEAN)
 BEGIN
     SET @_id = NULL;
     SET @str = 'SELECT user_id INTO @_id FROM users WHERE login = ? AND password = SHA(?);';

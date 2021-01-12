@@ -23,7 +23,7 @@ public class BreadstuffEntity extends ProductsEntity {
   }
 
   @Basic
-  @Column(name = "type", nullable = false)
+  @Column(name = "type", insertable = false, updatable = false, nullable = false)
   @Enumerated(EnumType.STRING)
   public BreadstuffType getType() {
     return type;
