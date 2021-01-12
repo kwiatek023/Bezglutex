@@ -29,7 +29,7 @@ public class OrdersProductsEntity {
     this.quantity = quantity;
   }
 
-  @ManyToOne
+  @OneToOne
   @JoinColumn(name = "product_id")
   public ProductsEntity getProductsEntity() {
     return productsEntity;
