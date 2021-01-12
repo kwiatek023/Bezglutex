@@ -57,7 +57,7 @@ public class OrdersEntity {
     this.realized = realized;
   }
 
-  @ManyToOne
+  @OneToOne
   @JoinColumn(name = "customer_id")
   public CustomersEntity getCustomersEntity() {
     return customersEntity;
