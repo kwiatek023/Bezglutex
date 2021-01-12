@@ -65,4 +65,8 @@ public class SessionManager {
 
         return userType;
     }
+
+    public Session getCurrentSession() {
+        return currentSession;
+    }
 }
