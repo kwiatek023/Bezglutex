@@ -14,19 +14,18 @@ import javax.persistence.StoredProcedureQuery;
 public class SessionManager {
     private static final SessionManager instance = new SessionManager();
     private Session currentSession;
-    private SessionFactoryManager sessionFactoryManager;
+    private final SessionBuilder sessionBuilder;
 
     private SessionManager() {
-        sessionFactoryManager = new SessionFactoryManager();
-        sessionFactoryManager.buildSessionFactory("login", "login");
-        currentSession = sessionFactoryManager.getSessionFactory().openSession();
+        sessionBuilder = new SessionBuilder();
+        currentSession = sessionBuilder.buildSession("login", "login");
     }
 
     public static SessionManager getInstance() {
         return instance;
     }
 
-    public void openSessionForUser(String login, String password) throws FailedLoginException {
+    public UserType openSessionForUser(String login, String password) throws FailedLoginException {
         StoredProcedureQuery procedureQuery = currentSession.createStoredProcedureQuery("user_exists").
                 registerStoredProcedureParameter("login", String.class, ParameterMode.IN)
                 .registerStoredProcedureParameter("password", String.class, ParameterMode.IN)
@@ -44,25 +43,26 @@ public class SessionManager {
                 .setParameter("login", login);
 
         UserType userType = userTypeQuery.getSingleResult();
+        currentSession.close();
 
         switch (userType) {
             case store_keeper: {
-                sessionFactoryManager.buildSessionFactory("store_keeper", "store_keeper");
+                currentSession = sessionBuilder.buildSession("store_keeper", "store_keeper");
                 break;
             }
             case store_manager: {
-                sessionFactoryManager.buildSessionFactory("store_manager", "store_manager");
+                currentSession = sessionBuilder.buildSession("store_manager", "store_manager");
                 break;
             }
             case salesman: {
-                sessionFactoryManager.buildSessionFactory("salesman", "salesman");
+                currentSession = sessionBuilder.buildSession("salesman", "salesman");
                 break;
             }
             case admin: {
-                sessionFactoryManager.buildSessionFactory("admin", "admin");
+                currentSession = sessionBuilder.buildSession("admin", "admin");
             }
         }
 
-        currentSession = sessionFactoryManager.getSessionFactory().openSession();
+        return userType;
     }
 }
