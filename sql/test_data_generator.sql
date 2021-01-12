@@ -262,7 +262,7 @@ BEGIN
     INSERT INTO users (login, password, type) VALUES
     ('zbigniew', 'qwerty', 'store_keeper'),
     ('maciej', 'maciej1', 'store_manager'),
-    ('wiesia', 'wiesia1', 'sales_man'),
+    ('wiesia', 'wiesia1', 'salesman'),
     ('krzysztof', 'krzysztof1', 'admin');
 END$$
 DELIMITER ;

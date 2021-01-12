@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "products", schema = "bezglutex")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class ProductsEntity {
   private int productId;
   private ProductType type;
@@ -24,6 +24,7 @@ public class ProductsEntity {
 
   @Basic
   @Column(name = "type", nullable = false)
+  @Enumerated(EnumType.STRING)
   public ProductType getProductType() {
     return type;
   }
@@ -34,7 +35,6 @@ public class ProductsEntity {
 
   @Basic
   @Column(name = "price", nullable = false, precision = 2)
-  @Enumerated(EnumType.STRING)
   public BigDecimal getPrice() {
     return price;
   }

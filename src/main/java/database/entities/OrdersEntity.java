@@ -67,7 +67,7 @@ public class OrdersEntity {
     this.customersEntity = customersEntity;
   }
 
-  @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "orderId", cascade = CascadeType.ALL)
   public Set<OrdersProductsEntity> getOrdersProductsEntities() {
     return ordersProductsEntities;
   }

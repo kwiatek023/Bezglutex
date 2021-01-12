@@ -2,12 +2,11 @@ package database.connection;
 
 import database.UserType;
 import database.connection.exceptions.FailedLoginException;
-import database.entities.UsersEntity;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 import javax.persistence.ParameterMode;
 import javax.persistence.StoredProcedureQuery;
-import javax.persistence.TypedQuery;
 
 /**
  * It is a singleton.
@@ -28,24 +27,23 @@ public class SessionManager {
     }
 
     public void openSessionForUser(String login, String password) throws FailedLoginException {
-        StoredProcedureQuery query = currentSession.createStoredProcedureQuery("log_in_user").
+        StoredProcedureQuery procedureQuery = currentSession.createStoredProcedureQuery("user_exists").
                 registerStoredProcedureParameter("login", String.class, ParameterMode.IN)
                 .registerStoredProcedureParameter("password", String.class, ParameterMode.IN)
                 .registerStoredProcedureParameter("result", Boolean.class, ParameterMode.OUT)
                 .setParameter("login", login).setParameter("password", password);
-        query.execute();
-        Boolean loggedIn = (Boolean) query.getOutputParameterValue("result");
+        procedureQuery.execute();
+        Boolean userExists = (Boolean) procedureQuery.getOutputParameterValue("result");
 
-        if(!loggedIn) {
+        if(!userExists) {
             throw new FailedLoginException();
         }
 
-        TypedQuery<UsersEntity> typedQuery  = currentSession.
-                createQuery("from UsersEntity where login = (:login)", UsersEntity.class)
+        Query<UserType> userTypeQuery  = currentSession.
+                createQuery("SELECT type FROM UsersEntity WHERE login = (:login)", UserType.class)
                 .setParameter("login", login);
 
-        UsersEntity en = typedQuery.getSingleResult();
-        UserType userType = en.getType();
+        UserType userType = userTypeQuery.getSingleResult();
 
         switch (userType) {
             case store_keeper: {
