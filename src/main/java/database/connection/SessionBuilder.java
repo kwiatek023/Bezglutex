@@ -26,7 +26,6 @@ public class SessionBuilder {
                 addAnnotatedClass(SuppliersEntity.class).
                 addAnnotatedClass(SuppliesEntity.class).
                 addAnnotatedClass(SuppliesProductsEntity.class).
-                addAnnotatedClass(SuppliesProductsEntityPK.class).
                 addAnnotatedClass(UsersEntity.class).
                 buildSessionFactory();
 

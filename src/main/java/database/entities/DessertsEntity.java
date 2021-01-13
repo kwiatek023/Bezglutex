@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "desserts", schema = "bezglutex")
-public class DessertsEntity extends ProductsEntity {
+public class DessertsEntity {
   private int productId;
   private String name;
   private byte dairyFree;

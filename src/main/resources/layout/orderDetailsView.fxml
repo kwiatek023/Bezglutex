@@ -1,0 +1,21 @@
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="layout.controllers.OrderDetailsViewController"
+            fx:id="DetailsBorderPane">
+
+    <center>
+        <TableView fx:id="tableView">
+            <columns>
+                <TableColumn fx:id="productId" text="product id"/>
+                <TableColumn fx:id="typeOfProduct" text="type"/>
+                <TableColumn fx:id="price" text="price"/>
+            </columns>
+        </TableView>
+    </center>
+    <stylesheets>
+        <URL value="@configure.css"/>
+    </stylesheets>
+</BorderPane>

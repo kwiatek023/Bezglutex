@@ -22,7 +22,7 @@ CREATE TABLE orders
     order_id    INT     NOT NULL AUTO_INCREMENT,
     customer_id INT     NOT NULL,
     date        DATE,
-    payment     ENUM ('bank transfer', 'on delivery') NOT NULL,
+    payment     ENUM ('bank_transfer', 'on_delivery') NOT NULL,
     realized    BOOLEAN NOT NULL,
 
     PRIMARY KEY (order_id),
@@ -54,9 +54,9 @@ CREATE TABLE orders_products
 CREATE TABLE breadstuff
 (
     product_id         INT NOT NULL,
-    type               ENUM ('baguette', 'white bread',
-        'dark bread', 'granary bread',
-        'toasted bread', 'kaiser roll',
+    type               ENUM ('baguette', 'white_bread',
+        'dark_bread', 'granary_bread',
+        'toasted_bread', 'kaiser_roll',
         'ciabatta') NOT NULL,
 
     netto_weight       INT NOT NULL,
@@ -131,7 +131,7 @@ CREATE TABLE supplies
     supply_id   INT  NOT NULL AUTO_INCREMENT,
     supplier_id INT  NOT NULL,
     date        DATE NOT NULL,
-    payment     ENUM ('bank transfer', 'on delivery') NOT NULL,
+    payment     ENUM ('bank_transfer', 'on_delivery') NOT NULL,
 
     PRIMARY KEY (supply_id),
     CONSTRAINT supplies_suppliers_fk FOREIGN KEY (supplier_id) REFERENCES suppliers (supplier_id)

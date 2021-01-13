@@ -5,7 +5,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "pasta", schema = "bezglutex")
-public class PastaEntity extends ProductsEntity {
+public class PastaEntity {
   private int productId;
   private PastaType type;
   private int nettoWeight;
