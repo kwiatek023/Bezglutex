@@ -25,6 +25,7 @@ public class LoginController {
         sessionManager = SessionManager.getInstance();
     }
 
+    @FXML
     public void logIn() {
         try {
             LayoutFactory layoutFactory = new ConcreteLayoutFactory();

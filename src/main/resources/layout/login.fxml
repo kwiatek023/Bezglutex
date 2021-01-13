@@ -16,7 +16,4 @@
         <Button fx:id="loginButton" layoutX="400.0" layoutY="400.0" mnemonicParsing="false"
                 prefHeight="30.0" prefWidth="250.0" onAction="#logIn" text="Log in"/>
     </children>
-    <!--    <stylesheets>-->
-    <!--        <URL value="@login.css"/>-->
-    <!--    </stylesheets>-->
 </AnchorPane>
