@@ -7,8 +7,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import layout.App;
-import layout.ConcreteLayoutFactory;
-import layout.LayoutFactory;
+import layout.factory.ConcreteLayoutFactory;
+import layout.factory.LayoutFactory;
 
 import java.io.IOException;
 

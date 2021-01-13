@@ -4,35 +4,46 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="layout.controllers.AdminViewController"
-            fx:id="borderPane">
+            fx:id="borderPane" prefWidth="1100" prefHeight="825">
 
     <top>
         <VBox>
-            <HBox alignment="TOP_CENTER" spacing="40.0">
-                <TextField fx:id="login" promptText="Login"/>
-                <PasswordField fx:id="password" promptText="Password"/>
+            <HBox alignment="TOP_CENTER">
+                <TextField fx:id="loginToAdd" promptText="Login"/>
+                <PasswordField fx:id="passwordToAdd" promptText="Password"/>
                 <ChoiceBox fx:id="userTypeChoiceBox"/>
-                <Button fx:id="addUserButton" text="Add user" onAction="#addUser"/>
+                <!--suppress JavaFxUnresolvedFxIdReference -->
+                <Button fx:id="addUserButton" text="Add user" onAction="#addUserClicked"/>
             </HBox>
-            <HBox alignment="TOP_CENTER" spacing="40.0">
-                <TextField fx:id="user" promptText="User id"/>
-                <Button fx:id="resetPasswordButton" text="Reset password" onAction="#resetPassword"/>
+            <HBox alignment="TOP_CENTER">
+                <TextField fx:id="loginToResetPassword" promptText="User's login"/>
+                <!--suppress JavaFxUnresolvedFxIdReference -->
+                <Button fx:id="resetPasswordButton" text="Reset password" onAction="#resetPasswordClicked"/>
             </HBox>
-            <HBox alignment="TOP_CENTER" spacing="40.0">
-                <TextField fx:id="removedUserId" promptText="User id"/>
-                <Button fx:id="removeUser" text="Remove user" onAction="#removeUser"/>
+            <HBox alignment="TOP_CENTER">
+                <TextField fx:id="loginToRemove" promptText="User's login"/>
+                <!--suppress JavaFxUnresolvedFxIdReference -->
+                <Button fx:id="removeUserButton" text="Remove user" onAction="#removeUserClicked"/>
             </HBox>
         </VBox>
     </top>
     <center>
         <TableView fx:id="tableView">
+            <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
             <columns>
-                <TableColumn fx:id="idColumn" text="ID"/>
-                <TableColumn fx:id="loginColumn" text="LOGIN"/>
-                <TableColumn fx:id="typeColumn" text="USER TYPE"/>
+                <TableColumn fx:id="loginColumn" text="LOGIN" maxWidth="5000" />
+                <TableColumn fx:id="typeColumn" text="USER TYPE" maxWidth="5000" />
             </columns>
         </TableView>
     </center>
+    <bottom>
+        <HBox alignment="TOP_RIGHT">
+            <!--suppress JavaFxUnresolvedFxIdReference -->
+            <Button fx:id="backupButton" alignment="BOTTOM_RIGHT" mnemonicParsing="false" text="Make a backup" onAction="#makeBackup"/>
+            <!--suppress JavaFxUnresolvedFxIdReference -->
+            <Button fx:id="restoreButton" alignment="BOTTOM_RIGHT" mnemonicParsing="false" text="Restore from backup" onAction="#restoreFromBackup"/>
+        </HBox>
+    </bottom>
     <stylesheets>
         <URL value="@configure.css"/>
     </stylesheets>

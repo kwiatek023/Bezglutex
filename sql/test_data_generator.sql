@@ -259,7 +259,7 @@ CREATE PROCEDURE create_users()
 BEGIN
     ALTER TABLE users AUTO_INCREMENT = 1;
 
-    INSERT INTO users (login, password, type) VALUES
+    INSERT INTO users VALUES
     ('zbigniew', 'qwerty', 'store_keeper'),
     ('maciej', 'maciej1', 'store_manager'),
     ('wiesia', 'wiesia1', 'salesman'),

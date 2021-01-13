@@ -3,6 +3,7 @@ package database.connection;
 import database.UserType;
 import database.connection.exceptions.FailedLoginException;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
 import javax.persistence.ParameterMode;
@@ -14,11 +15,12 @@ import javax.persistence.StoredProcedureQuery;
 public class SessionManager {
     private static final SessionManager instance = new SessionManager();
     private Session currentSession;
-    private final SessionBuilder sessionBuilder;
+    private String sessionsOwner;
+    private final SessionFactoryBuilder sessionFactoryBuilder;
+    private SessionFactory sessionFactory;
 
     private SessionManager() {
-        sessionBuilder = new SessionBuilder();
-        currentSession = sessionBuilder.buildSession("login", "login");
+        sessionFactoryBuilder = new SessionFactoryBuilder();
     }
 
     public static SessionManager getInstance() {
@@ -26,6 +28,9 @@ public class SessionManager {
     }
 
     public UserType openSessionForUser(String login, String password) throws FailedLoginException {
+        sessionFactory = sessionFactoryBuilder.buildSessionFactory("login", "login");
+        currentSession = openSession();
+
         StoredProcedureQuery procedureQuery = currentSession.createStoredProcedureQuery("user_exists").
                 registerStoredProcedureParameter("login", String.class, ParameterMode.IN)
                 .registerStoredProcedureParameter("password", String.class, ParameterMode.IN)
@@ -38,35 +43,50 @@ public class SessionManager {
             throw new FailedLoginException();
         }
 
+        sessionsOwner = login;
+
         Query<UserType> userTypeQuery  = currentSession.
                 createQuery("SELECT type FROM UsersEntity WHERE login = (:login)", UserType.class)
                 .setParameter("login", login);
 
         UserType userType = userTypeQuery.getSingleResult();
-        currentSession.close();
+        closeSession();
 
         switch (userType) {
             case store_keeper: {
-                currentSession = sessionBuilder.buildSession("store_keeper", "store_keeper");
+                sessionFactory = sessionFactoryBuilder.buildSessionFactory("store_keeper", "store_keeper");
                 break;
             }
             case store_manager: {
-                currentSession = sessionBuilder.buildSession("store_manager", "store_manager");
+                sessionFactory = sessionFactoryBuilder.buildSessionFactory("store_manager", "store_manager");
                 break;
             }
             case salesman: {
-                currentSession = sessionBuilder.buildSession("salesman", "salesman");
+                sessionFactory = sessionFactoryBuilder.buildSessionFactory("salesman", "salesman");
                 break;
             }
             case admin: {
-                currentSession = sessionBuilder.buildSession("admin", "admin");
+                sessionFactory = sessionFactoryBuilder.buildSessionFactory("admin", "admin");
             }
         }
 
         return userType;
     }
 
-    public Session getCurrentSession() {
+    public Session openSession() {
+        if (currentSession != null) {
+            closeSession();
+        }
+        currentSession = sessionFactory.openSession();
         return currentSession;
+    }
+
+    public void closeSession() {
+        currentSession.close();
+        currentSession = null;
+    }
+
+    public String getSessionsOwner() {
+        return sessionsOwner;
     }
 }
