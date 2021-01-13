@@ -7,163 +7,256 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import layout.App;
+import layout.exceptions.CannotRemoveSessionOwnerException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureQuery;
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class AdminViewController {
+    private SessionManager sessionManager;
     private final ObservableList<UsersEntity> usersEntities = FXCollections.observableArrayList();
 
     @FXML
     public BorderPane borderPane;
 
     @FXML
-    public TableView tableView;
+    public TextField loginToAdd;
 
     @FXML
-    public TableColumn idColumn;
-
-    @FXML
-    public TableColumn loginColumn;
-
-    @FXML
-    public TableColumn typeColumn;
+    public PasswordField passwordToAdd;
 
     @FXML
     public ChoiceBox<UserType> userTypeChoiceBox;
 
-//    public Button addUserButton;
-//    public TableColumn removeButtonsColumn;
+    @FXML
+    public TextField loginToResetPassword;
 
+    @FXML
+    public TextField loginToRemove;
 
-//    public TextField loginTextField;
-//    public PasswordField passwordField;
-//    public Button removeButton = new Button("REMOVE");
+    @FXML
+    public TableView<UsersEntity> tableView;
+
+    @FXML
+    public TableColumn<UsersEntity, String> loginColumn;
+
+    @FXML
+    public TableColumn<UsersEntity, String> typeColumn;
 
     public void initialize() {
-        SessionManager sessionManager = SessionManager.getInstance();
-
-        tableView.prefWidthProperty().bind(borderPane.widthProperty().divide(1.5));
-        idColumn.prefWidthProperty().bind(tableView.widthProperty().divide(4));
-        loginColumn.prefWidthProperty().bind(tableView.widthProperty().divide(4));
-        typeColumn.prefWidthProperty().bind(tableView.widthProperty().divide(4));
-
+        sessionManager = SessionManager.getInstance();
         userTypeChoiceBox.getItems().addAll(UserType.values());
 
-        Session session = sessionManager.getCurrentSession();
-        Query query = session.createQuery("FROM UsersEntity");
+        Session session = sessionManager.openSession();
+        Query<UsersEntity> query = session.createQuery("FROM UsersEntity", UsersEntity.class);
         usersEntities.addAll(query.getResultList());
+        sessionManager.closeSession();
+
         tableView.setItems(usersEntities);
 
-        //tableView.setEditable(true);
-        idColumn.setCellValueFactory(new PropertyValueFactory<UsersEntity, Integer>("userId"));
-        loginColumn.setCellValueFactory(new PropertyValueFactory<UsersEntity, String>("login"));
-        typeColumn.setCellValueFactory(new PropertyValueFactory<UsersEntity, String>("type"));
-    }
-//
-//    private Callback<TableColumn<UsersEntity, Void>, TableCell<UsersEntity, Void>> createButtonCellFactory() {
-//        return new Callback<TableColumn<UsersEntity, Void>, TableCell<UsersEntity, Void>>() {
-//            @Override
-//            public TableCell<UsersEntity, Void> call(TableColumn<UsersEntity, Void> param) {
-//                return new TableCell<UsersEntity, Void>() {
-//                    private Button button = new Button("REMOVE");
-//
-//                    {
-//                        setAlignment(Pos.CENTER);
-//                        button.setOnAction((event) -> {
-//                            removeUser(data.get(getIndex()));
-//                        });
-//                    }
-//
-//                    @Override
-//                    public void updateItem(Void item, boolean empty) {
-//                        super.updateItem(item, empty);
-//                        if (empty) {
-//                            setGraphic(null);
-//                        } else {
-//                            setGraphic(button);
-//                        }
-//                    }
-//                };
-//            }
-//        };
-//    }
-//
-//    private void removeUser(UsersEntity user) {
-//        if (showConfirmationAlert("Are you sure you want to remove user " +
-//                user.getUserId() + "?\nThis cannot be undone!")) {
-//            //TODO handle deleting oneself
-//            try (Session session = LoginManager.getSession()) {
-//                session.beginTransaction();
-//                session.remove(user);
-//                session.getTransaction().commit();
-//                data.remove(user);
-//            } catch (OptimisticLockException exception) {
-//                showErrorAlert("Unable to remove user '" + user.getUserId() + "'.\nUser is present in the logs.\n" +
-//                        "To remove this user clean the logs.");
-//            }
-//        }
-//    }
-//
-//    private void showUsersInTable(List<UsersEntity> users) {
-//        data.addAll(users);
-//    }
-//
-//    @FXML
-//    public void goBack() {
-//        TileView.initialize(LoginManager.getAccessLevel());
-//    }
-//
-//    public void addUserButtonClicked(ActionEvent actionEvent) {
-//        if (loginTextField.getText().isEmpty() || passwordField.getText().isEmpty() || accessLevelChoiceBox.getValue() == null) {
-//            showErrorAlert("Login, password and access level cannot be empty!");
-//            return;
-//        }
-//        for (UsersEntity user : data) {
-//            if (user
-//                    .getUserId().equals(loginTextField.getText())) {
-//                showErrorAlert("User with " + loginTextField.getText() + " already exists!");
-//                return;
-//            }
-//        }
-//        UsersEntity user = new UsersEntity();
-//        user.setUserId(loginTextField.getText());
-//        user.setPassword(BCrypt.hashpw(passwordField.getText(), BCrypt.gensalt()));
-//        user.setAccessLevel(accessLevelChoiceBox.getValue());
-//        data.add(user);
-//        Session session = LoginManager.getSession();
-//        session.beginTransaction();
-//        session.save(user);
-//        session.getTransaction().commit();
-//        session.close();
-//
-//    }
-//
-//    private void showErrorAlert(String mess) {
-//        Alert alert = new Alert(Alert.AlertType.ERROR);
-//        alert.setHeaderText(null);
-//        alert.setContentText(mess);
-//        alert.showAndWait();
-//    }
-//
-//    private boolean showConfirmationAlert(String message) {
-//        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-//        alert.setHeaderText(null);
-//        alert.setContentText(message);
-//        return !alert.showAndWait().get().getButtonData().isCancelButton();
-//    }
-
-    public void addUser(ActionEvent actionEvent) {
+        loginColumn.setCellValueFactory(new PropertyValueFactory<>("login"));
+        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
     }
 
-    public void resetPassword(ActionEvent actionEvent) {
+    public void addUserClicked(ActionEvent actionEvent) {
+        if (!loginToAdd.getText().isBlank() && !passwordToAdd.getText().isBlank() && userTypeChoiceBox.getValue() != null) {
+
+            try {
+                addUser(loginToAdd.getText(), passwordToAdd.getText(), userTypeChoiceBox.getValue());
+                displayInfoAlert("User with login \"" + loginToAdd.getText() + "\" successfully added.");
+            } catch (Exception ex) {
+                displayErrorAlert("User with login \"" + loginToAdd.getText() + "\" exists.");
+            }
+        } else {
+            displayErrorAlert("You should enter login, password and choose user type in order to add new user.");
+        }
+
+        loginToAdd.setText("");
+        passwordToAdd.setText("");
+        userTypeChoiceBox.setValue(null);
     }
 
-    public void removeUser(ActionEvent actionEvent) {
+
+    private void addUser(String login, String password, UserType type) throws Exception {
+        UsersEntity newUser = new UsersEntity();
+        newUser.setLogin(login);
+        newUser.setPassword(password);
+        newUser.setType(type);
+
+        Session session = sessionManager.openSession();
+        session.beginTransaction();
+        session.save(newUser);
+        session.getTransaction().commit();
+        sessionManager.closeSession();
+
+        usersEntities.add(newUser);
+    }
+
+    public void resetPasswordClicked(ActionEvent actionEvent) {
+        if (!loginToResetPassword.getText().isBlank()) {
+            String login = loginToResetPassword.getText();
+            String message = "Do you confirm you want to reset password for user with login \"" + login + "\"?";
+
+            if (confirm(message)) {
+                try {
+                    resetPassword(loginToResetPassword.getText());
+                    displayInfoAlert("Password of user with login \"" + login + "\" successfully reset.");
+                } catch (Exception ex) {
+                    displayErrorAlert("User with login \"" + login + "\" doesn't exists.");
+                }
+            }
+        } else {
+            displayErrorAlert("You should enter user's login in order to reset user's password.");
+        }
+
+        loginToResetPassword.setText("");
+    }
+
+    private void resetPassword(String login) throws Exception {
+        Session session = sessionManager.openSession();
+        session.beginTransaction();
+
+        StoredProcedureQuery procedureQuery = session.createStoredProcedureQuery("reset_password").
+                registerStoredProcedureParameter("login", String.class, ParameterMode.IN)
+                .setParameter("login", login);
+        procedureQuery.execute();
+
+        session.getTransaction().commit();
+        sessionManager.closeSession();
+    }
+
+    public void removeUserClicked(ActionEvent actionEvent) {
+        if (!loginToRemove.getText().isBlank()) {
+            String login = loginToRemove.getText();
+            String message = "Do you confirm you want to remove user with login \"" + login + "\"?";
+
+            if (confirm(message)) {
+                try {
+                    removeUser(login);
+                    displayInfoAlert("User with login \"" + login + "\" successfully removed.");
+                } catch (CannotRemoveSessionOwnerException sessionOwnerEx) {
+                    displayErrorAlert("You can't remove yourself!");
+                } catch (Exception ex) {
+                    displayErrorAlert("User with login \"" + login + "\" doesn't exists.");
+                }
+            }
+        } else {
+            displayErrorAlert("You should enter user's login in order to remove user.");
+        }
+
+        loginToRemove.setText("");
+    }
+
+    private void removeUser(String login) throws CannotRemoveSessionOwnerException {
+        if (login.equals(sessionManager.getSessionsOwner())) {
+            throw new CannotRemoveSessionOwnerException();
+        }
+
+        UsersEntity userToRemove = null;
+
+        for (UsersEntity user : usersEntities) {
+            if (user.getLogin().equals(login)) {
+                userToRemove = user;
+                break;
+            }
+        }
+
+        Session session = sessionManager.openSession();
+        session.beginTransaction();
+        session.remove(userToRemove);
+        session.getTransaction().commit();
+        sessionManager.closeSession();
+
+        usersEntities.remove(userToRemove);
+    }
+
+    public void makeBackup() {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Choose directory to save backup");
+        File file = directoryChooser.showDialog(App.getStage());
+
+        if (file != null) {
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
+            String currentDate = formatter.format(calendar.getTime());
+
+            String filePath = file.getAbsolutePath() + "/bezglutex-backup-" + currentDate;
+
+            String executedCmd = "mysqldump -u admin -padmin --databases bezglutex";
+
+            try {
+                Process runtimeProcess = Runtime.getRuntime().exec(executedCmd);
+                InputStream inputStream = new BufferedInputStream(runtimeProcess.getInputStream());
+                OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(filePath));
+
+                int counter;
+                byte[] bytes = new byte[1024];
+                while ((counter = inputStream.read(bytes)) != -1) {
+                    outputStream.write(bytes, 0, counter);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            displayInfoAlert("Backup successfully made");
+        } else {
+            displayErrorAlert("You have to select directory to save backup!");
+        }
+    }
+
+    public void restoreFromBackup() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select backup to restore");
+        File file = fileChooser.showOpenDialog(App.getStage());
+
+        if (file != null) {
+            String executedCmd = "mysql --user=admin --password=admin bezglutex -e source " + file.getAbsolutePath();
+
+            try {
+                Runtime.getRuntime().exec(executedCmd);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            displayInfoAlert("Database successfully restored");
+        } else {
+            displayErrorAlert("You have to select backup to restore database!");
+        }
+    }
+
+    private void displayErrorAlert(String contextText) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(null);
+        alert.setHeaderText(null);
+        alert.setContentText(contextText);
+        alert.showAndWait();
+    }
+
+    private void displayInfoAlert(String contextText) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(null);
+        alert.setHeaderText(null);
+        alert.setContentText(contextText);
+        alert.showAndWait();
+    }
+
+    private boolean confirm(String contextText) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setHeaderText(null);
+        alert.setContentText(contextText);
+
+        alert.showAndWait();
+
+        return alert.getResult() == ButtonType.OK;
     }
 }
-

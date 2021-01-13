@@ -1,12 +1,11 @@
 package database.connection;
 
 import database.entities.*;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-public class SessionBuilder {
-    public Session buildSession(String login, String password) {
+public class SessionFactoryBuilder {
+    public SessionFactory buildSessionFactory(String login, String password) {
         Configuration configuration = new Configuration();
 
         System.setProperty("hibernate.connection.username", login);
@@ -29,6 +28,6 @@ public class SessionBuilder {
                 addAnnotatedClass(UsersEntity.class).
                 buildSessionFactory();
 
-        return sessionFactory.openSession();
+        return sessionFactory;
     }
 }

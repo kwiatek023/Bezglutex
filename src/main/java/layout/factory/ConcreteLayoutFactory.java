@@ -1,4 +1,4 @@
-package layout;
+package layout.factory;
 
 import database.UserType;
 

@@ -166,25 +166,36 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE OR REPLACE PROCEDURE reset_password(IN _user_id INT)
+CREATE OR REPLACE PROCEDURE reset_password(IN _login VARCHAR(45))
 BEGIN
-    UPDATE users
-    SET password = (SELECT SHA(SUBSTRING(SHA(RAND()), 1, 20)))
-    WHERE user_id = _user_id;
+    SET @_login = NULL;
+    SET @str = 'SELECT login INTO @_login FROM users WHERE login = ?;';
+
+    PREPARE stmt FROM @str;
+    EXECUTE stmt USING _login;
+    DEALLOCATE PREPARE stmt;
+
+    IF @_login IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'User with this login doesn\'t exist';
+    ELSE
+        UPDATE users
+        SET password = (SELECT SHA(SUBSTRING(SHA(RAND()), 1, 20)))
+        WHERE login = _login;
+    END IF;
 END $$
 DELIMITER ;
 
 DELIMITER $$
 CREATE OR REPLACE PROCEDURE user_exists(IN login VARCHAR(45), IN password VARCHAR(40), OUT result BOOLEAN)
 BEGIN
-    SET @_id = NULL;
-    SET @str = 'SELECT user_id INTO @_id FROM users WHERE login = ? AND password = SHA(?);';
+    SET @_login = NULL;
+    SET @str = 'SELECT login INTO @_login FROM users WHERE login = ? AND password = SHA(?);';
 
     PREPARE stmt FROM @str;
     EXECUTE stmt USING login, password;
     DEALLOCATE PREPARE stmt;
 
-    IF @_id IS NULL THEN
+    IF @_login IS NULL THEN
         SET result = FALSE;
     ELSE
         SET result = TRUE;

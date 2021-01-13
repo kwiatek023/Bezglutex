@@ -151,10 +151,9 @@ CREATE TABLE supplies_products
 
 CREATE TABLE users
 (
-    user_id  INT         NOT NULL AUTO_INCREMENT,
     login    VARCHAR(45) NOT NULL,
     password VARCHAR(40) NOT NULL,
     type     ENUM ('salesman', 'admin', 'store_keeper', 'store_manager') NOT NULL,
 
-    PRIMARY KEY (user_id)
+    PRIMARY KEY (login)
 );
