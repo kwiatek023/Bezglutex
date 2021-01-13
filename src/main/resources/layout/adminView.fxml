@@ -1,0 +1,39 @@
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="layout.controllers.AdminViewController"
+            fx:id="borderPane">
+
+    <top>
+        <VBox>
+            <HBox alignment="TOP_CENTER" spacing="40.0">
+                <TextField fx:id="login" promptText="Login"/>
+                <PasswordField fx:id="password" promptText="Password"/>
+                <ChoiceBox fx:id="userTypeChoiceBox"/>
+                <Button fx:id="addUserButton" text="Add user" onAction="#addUser"/>
+            </HBox>
+            <HBox alignment="TOP_CENTER" spacing="40.0">
+                <TextField fx:id="user" promptText="User id"/>
+                <Button fx:id="resetPasswordButton" text="Reset password" onAction="#resetPassword"/>
+            </HBox>
+            <HBox alignment="TOP_CENTER" spacing="40.0">
+                <TextField fx:id="removedUserId" promptText="User id"/>
+                <Button fx:id="removeUser" text="Remove user" onAction="#removeUser"/>
+            </HBox>
+        </VBox>
+    </top>
+    <center>
+        <TableView fx:id="tableView">
+            <columns>
+                <TableColumn fx:id="idColumn" text="ID"/>
+                <TableColumn fx:id="loginColumn" text="LOGIN"/>
+                <TableColumn fx:id="typeColumn" text="USER TYPE"/>
+            </columns>
+        </TableView>
+    </center>
+    <stylesheets>
+        <URL value="@configure.css"/>
+    </stylesheets>
+</BorderPane>
