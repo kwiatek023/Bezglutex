@@ -6,13 +6,13 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "products", schema = "bezglutex")
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class ProductsEntity {
   private int productId;
   private ProductType type;
   private BigDecimal price;
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "product_id", nullable = false)
   public int getProductId() {
     return productId;

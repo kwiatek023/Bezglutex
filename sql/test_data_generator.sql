@@ -103,13 +103,13 @@ CREATE PROCEDURE create_supplies()
 BEGIN
     DECLARE i INT UNSIGNED DEFAULT 0;
     DECLARE _supplier_id INT;
-    DECLARE _payment ENUM('bank transfer', 'on delivery');
+    DECLARE _payment ENUM('bank_transfer', 'on_delivery');
     ALTER TABLE supplies AUTO_INCREMENT = 1;
 
     WHILE i < 25
         DO
             SET _supplier_id = (i % 15) + 1;
-            SET _payment = ELT(FLOOR(1 + RAND() * (2 - 1 + 1)), 'bank transfer', 'on delivery');
+            SET _payment = ELT(FLOOR(1 + RAND() * (2 - 1 + 1)), 'bank_transfer', 'on_delivery');
             CALL add_supply(_supplier_id, _payment);
             SET i = i + 1;
     END WHILE;
@@ -132,8 +132,8 @@ BEGIN
 
     WHILE i < 30
         DO
-            SET _type = ELT(FLOOR(1 + RAND() * (7 - 1 + 1)), 'baguette', 'white bread', 'dark bread', 'granary bread',
-                                                                'toasted bread', 'kaiser roll', 'ciabatta');
+            SET _type = ELT(FLOOR(1 + RAND() * (7 - 1 + 1)), 'baguette', 'white_bread', 'dark_bread', 'granary_bread',
+                                                                'toasted_bread', 'kaiser_roll', 'ciabatta');
             SET _netto_weight = FLOOR(100 + RAND() * (700 - 100 + 1));
             SET _pieces_per_package = FLOOR(1 + RAND() * (6 - 1 + 1));
             SET _energy_value = FLOOR(50 + RAND() * (300 - 50 + 1));
@@ -213,7 +213,7 @@ BEGIN
     DECLARE j INT UNSIGNED DEFAULT 0;
     DECLARE _customer_id INT;
     DECLARE _date date;
-    DECLARE _payment ENUM('bank transfer', 'on delivery');
+    DECLARE _payment ENUM('bank_transfer', 'on_delivery');
     DECLARE _realized BOOLEAN;
     DECLARE _order_id INT;
     DECLARE _product_id INT;
@@ -233,7 +233,7 @@ BEGIN
                 SET _realized = TRUE;
             END IF;
 
-            SET _payment = ELT(FLOOR(1 + RAND() * (2 - 1 + 1)), 'bank transfer', 'on delivery');
+            SET _payment = ELT(FLOOR(1 + RAND() * (2 - 1 + 1)), 'bank_transfer', 'on_delivery');
             INSERT INTO orders(customer_id, date, payment, realized) VALUES (_customer_id, _date, _payment, _realized);
             SET _order_id = LAST_INSERT_ID();
 

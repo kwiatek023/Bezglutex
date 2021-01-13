@@ -1,11 +1,11 @@
 package database.entities;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "supplies_products", schema = "bezglutex")
-@IdClass(SuppliesProductsEntityPK.class)
-public class SuppliesProductsEntity {
+public class SuppliesProductsEntity implements Serializable {
   private int supplyId;
   private int productId;
   private int quantity;
