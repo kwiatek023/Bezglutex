@@ -1,10 +1,22 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<AnchorPane xmlns="http://javafx.com/javafx"
+<?import java.net.URL?>
+<BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="layout.controllers.SalesmanViewController"
-            prefHeight="400.0" prefWidth="600.0">
+            fx:id="BrowserBorderPane">
 
-</AnchorPane>
+    <center>
+        <TableView fx:id="tableView">
+            <columns>
+                <TableColumn fx:id="id" text="Order number"/>
+                <TableColumn fx:id="date" text="Date"/>
+                <TableColumn fx:id="payment" text="Payment type"/>
+                <TableColumn fx:id="realized" text="Realized"/>
+            </columns>
+        </TableView>
+    </center>
+    <stylesheets>
+        <URL value="@configure.css"/>
+    </stylesheets>
+</BorderPane>

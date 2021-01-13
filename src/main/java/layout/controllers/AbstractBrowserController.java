@@ -4,9 +4,13 @@ import database.connection.SessionManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.BorderPane;
 
 public abstract class AbstractBrowserController {
   protected SessionManager sessionManager;
+
+  @FXML
+  public BorderPane BrowserBorderPane;
 
   @FXML
   public TableView tableView;

@@ -20,10 +20,12 @@ public class SalesmanViewController extends AbstractBrowserController {
   @Override
   public void initialize() {
     this.sessionManager = SessionManager.getInstance();
+    createTableView();
   }
 
   @Override
   public void createTableView() {
+    tableView.prefWidthProperty().bind(BrowserBorderPane.widthProperty().divide(1.5));
     id.prefWidthProperty().bind(tableView.widthProperty().divide(4));
     date.prefWidthProperty().bind(tableView.widthProperty().divide(4));
     payment.prefWidthProperty().bind(tableView.widthProperty().divide(4));
