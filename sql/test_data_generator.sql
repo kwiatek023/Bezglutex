@@ -242,7 +242,7 @@ BEGIN
 
             WHILE j < @rand
                 DO
-                    SET _product_id = (j % 90) + 1;
+                    SET _product_id = FLOOR(1 + RAND() * (90 - 1 + 1));
                     SET _quantity = (SELECT FLOOR(1 + RAND() * (5 - 1 + 1)));
                     INSERT INTO orders_products VALUES (_order_id, _product_id, _quantity);
                     SET j = j + 1;

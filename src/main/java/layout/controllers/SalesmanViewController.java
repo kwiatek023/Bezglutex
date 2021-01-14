@@ -21,7 +21,7 @@ public class SalesmanViewController {
     private SessionManager sessionManager;
 
     @FXML
-    public BorderPane BrowserBorderPane;
+    public BorderPane browserBorderPane;
 
     @FXML
     public TableColumn<OrdersEntity, Integer> id;
