@@ -31,8 +31,8 @@
         <TableView fx:id="tableView">
             <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
             <columns>
-                <TableColumn fx:id="loginColumn" text="LOGIN" maxWidth="5000" />
-                <TableColumn fx:id="typeColumn" text="USER TYPE" maxWidth="5000" />
+                <TableColumn fx:id="loginColumn" text="Login"/>
+                <TableColumn fx:id="typeColumn" text="User type"/>
             </columns>
         </TableView>
     </center>
