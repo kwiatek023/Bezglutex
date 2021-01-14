@@ -9,7 +9,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import layout.App;
@@ -26,9 +25,6 @@ import java.util.Calendar;
 public class AdminViewController {
     private SessionManager sessionManager;
     private final ObservableList<UsersEntity> usersEntities = FXCollections.observableArrayList();
-
-    @FXML
-    public BorderPane borderPane;
 
     @FXML
     public TextField loginToAdd;

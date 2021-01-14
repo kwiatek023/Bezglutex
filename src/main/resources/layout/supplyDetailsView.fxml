@@ -6,7 +6,7 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="layout.controllers.SupplyDetailsViewController"
-            fx:id="DetailsBorderPane" prefWidth="1100" prefHeight="825">
+            fx:id="borderPane" prefWidth="1100" prefHeight="825">
 
     <center>
         <TableView fx:id="tableView">
