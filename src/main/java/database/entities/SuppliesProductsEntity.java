@@ -7,8 +7,8 @@ import java.io.Serializable;
 @Table(name = "supplies_products", schema = "bezglutex")
 public class SuppliesProductsEntity implements Serializable {
   private int supplyId;
-  private int productId;
   private int quantity;
+  private ProductsEntity productsEntity;
 
   @Id
   @Column(name = "supply_id", nullable = false)
@@ -18,16 +18,6 @@ public class SuppliesProductsEntity implements Serializable {
 
   public void setSupplyId(int supplyId) {
     this.supplyId = supplyId;
-  }
-
-  @Id
-  @Column(name = "product_id", nullable = false)
-  public int getProductId() {
-    return productId;
-  }
-
-  public void setProductId(int productId) {
-    this.productId = productId;
   }
 
   @Basic
@@ -40,6 +30,17 @@ public class SuppliesProductsEntity implements Serializable {
     this.quantity = quantity;
   }
 
+  @OneToOne
+  @JoinColumn(name = "product_id")
+  public ProductsEntity getProductsEntity() {
+    return productsEntity;
+  }
+
+  public void setProductsEntity(ProductsEntity productsEntity) {
+    this.productsEntity = productsEntity;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -48,7 +49,7 @@ public class SuppliesProductsEntity implements Serializable {
     SuppliesProductsEntity that = (SuppliesProductsEntity) o;
 
     if (supplyId != that.supplyId) return false;
-    if (productId != that.productId) return false;
+    if (productsEntity != that.productsEntity) return false;
     if (quantity != that.quantity) return false;
 
     return true;
@@ -57,7 +58,7 @@ public class SuppliesProductsEntity implements Serializable {
   @Override
   public int hashCode() {
     int result = supplyId;
-    result = 31 * result + productId;
+    result = 31 * result + productsEntity.getProductId();
     result = 31 * result + quantity;
     return result;
   }

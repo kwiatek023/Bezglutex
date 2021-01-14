@@ -1,8 +1,11 @@
 package database.entities;
 
 import database.PaymentType;
+
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "supplies", schema = "bezglutex")
@@ -10,8 +13,11 @@ public class SuppliesEntity {
   private int supplyId;
   private Date date;
   private PaymentType payment;
+  private SuppliersEntity suppliersEntity;
+  private Set<SuppliesProductsEntity> suppliesProductsEntities = new HashSet<>();
 
   @Id
+  @GeneratedValue
   @Column(name = "supply_id", nullable = false)
   public int getSupplyId() {
     return supplyId;
@@ -40,6 +46,25 @@ public class SuppliesEntity {
 
   public void setPayment(PaymentType payment) {
     this.payment = payment;
+  }
+
+  @OneToOne
+  @JoinColumn(name = "supplier_id")
+  public SuppliersEntity getSuppliersEntity() {
+    return suppliersEntity;
+  }
+
+  public void setSuppliersEntity(SuppliersEntity suppliersEntity) {
+    this.suppliersEntity = suppliersEntity;
+  }
+
+  @OneToMany(mappedBy = "supplyId", cascade = CascadeType.ALL)
+  public Set<SuppliesProductsEntity> getSuppliesProductsEntities() {
+    return suppliesProductsEntities;
+  }
+
+  public void setSuppliesProductsEntities(Set<SuppliesProductsEntity> suppliesProductsEntities) {
+    this.suppliesProductsEntities = suppliesProductsEntities;
   }
 
   @Override

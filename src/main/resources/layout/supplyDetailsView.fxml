@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import java.net.URL?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="layout.controllers.SupplyDetailsViewController"
+            fx:id="DetailsBorderPane" prefWidth="1100" prefHeight="825">
+
+    <center>
+        <TableView fx:id="tableView">
+            <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
+            <columns>
+                <TableColumn fx:id="productId" text="product id"/>
+                <TableColumn fx:id="type" text="type"/>
+                <TableColumn fx:id="price" text="price"/>
+            </columns>
+        </TableView>
+    </center>
+    <stylesheets>
+        <URL value="@configure.css"/>
+    </stylesheets>
+</BorderPane>
