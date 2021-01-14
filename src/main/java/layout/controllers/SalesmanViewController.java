@@ -8,52 +8,53 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import layout.App;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
+import java.io.IOException;
+
 public class SalesmanViewController extends AbstractBrowserController {
-  private final ObservableList<OrdersEntity> ordersEntities = FXCollections.observableArrayList();
+    private final ObservableList<OrdersEntity> ordersEntities = FXCollections.observableArrayList();
 
-  @FXML
-  public TableView<OrdersEntity> tableView;
+    @FXML
+    public TableView<OrdersEntity> tableView;
 
-  @FXML
-  public TableColumn realized;
+    @FXML
+    public TableColumn<OrdersEntity, String> realized;
 
-  @FXML
-  @Override
-  public void initialize() {
-    this.sessionManager = SessionManager.getInstance();
-    createTableView();
-  }
+    @FXML
+    @Override
+    public void initialize() {
+        this.sessionManager = SessionManager.getInstance();
+        createTableView();
+    }
 
-  @Override
-  public void createTableView() {
-    tableView.prefWidthProperty().bind(BrowserBorderPane.widthProperty().divide(1.5));
-    id.prefWidthProperty().bind(tableView.widthProperty().divide(4));
-    date.prefWidthProperty().bind(tableView.widthProperty().divide(4));
-    payment.prefWidthProperty().bind(tableView.widthProperty().divide(4));
-    realized.prefWidthProperty().bind(tableView.widthProperty().divide(4));
-
-    tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
-      if (newValue != null) {
-        OrderDetailsViewController.initialize(newValue.getOrderId());
+    @Override
+    public void createTableView() {
+        tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue != null) {
+                try {
+                    App.setRoot("orderDetailsView");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 //        showDetails(newValue.getOrderId());
-      }
-    });
+            }
+        });
 
-    Session session = sessionManager.openSession();
-    Query query = session.createQuery("FROM OrdersEntity ");
-    ordersEntities.addAll(query.getResultList());
-    tableView.setItems(ordersEntities);
+        Session session = sessionManager.openSession();
+        Query<OrdersEntity> query = session.createQuery("FROM OrdersEntity ", OrdersEntity.class);
+        ordersEntities.addAll(query.getResultList());
+        sessionManager.closeSession();
 
-    //tableView.setEditable(true);
-    id.setCellValueFactory(new PropertyValueFactory<OrdersEntity, Integer>("orderId"));
-    date.setCellValueFactory(new PropertyValueFactory<OrdersEntity, String>("date"));
-    payment.setCellValueFactory(new PropertyValueFactory<OrdersEntity, String>("payment"));
-    realized.setCellValueFactory(new PropertyValueFactory<OrdersEntity, String>("realized"));
+        tableView.setItems(ordersEntities);
 
-  }
+        id.setCellValueFactory(new PropertyValueFactory<>("orderId"));
+        date.setCellValueFactory(new PropertyValueFactory<>("date"));
+        payment.setCellValueFactory(new PropertyValueFactory<>("payment"));
+        realized.setCellValueFactory(new PropertyValueFactory<>("realized"));
+    }
 
 //  private void showDetails(int orderId) {
 //    try {

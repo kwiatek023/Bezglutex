@@ -25,11 +25,11 @@ public class ProductsEntity {
   @Basic
   @Column(name = "type", nullable = false)
   @Enumerated(EnumType.STRING)
-  public ProductType getProductType() {
+  public ProductType getType() {
     return type;
   }
 
-  public void setProductType(ProductType type) {
+  public void setType(ProductType type) {
     this.type = type;
   }
 

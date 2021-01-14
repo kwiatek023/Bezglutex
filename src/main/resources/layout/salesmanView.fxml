@@ -4,10 +4,11 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="layout.controllers.SalesmanViewController"
-            fx:id="BrowserBorderPane">
+            fx:id="BrowserBorderPane" prefWidth="1100" prefHeight="825">
 
     <center>
         <TableView fx:id="tableView">
+            <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
             <columns>
                 <TableColumn fx:id="id" text="Order number"/>
                 <TableColumn fx:id="date" text="Date"/>
