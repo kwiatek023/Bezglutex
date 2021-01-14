@@ -8,14 +8,29 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
 import layout.App;
+import layout.communication.ControllerCommunicator;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
 import java.io.IOException;
 
-public class SalesmanViewController extends AbstractBrowserController {
+public class SalesmanViewController {
     private final ObservableList<OrdersEntity> ordersEntities = FXCollections.observableArrayList();
+    private SessionManager sessionManager;
+
+    @FXML
+    public BorderPane BrowserBorderPane;
+
+    @FXML
+    public TableColumn<OrdersEntity, Integer> id;
+
+    @FXML
+    public TableColumn<OrdersEntity, String> date;
+
+    @FXML
+    public TableColumn<OrdersEntity, String> payment;
 
     @FXML
     public TableView<OrdersEntity> tableView;
@@ -24,22 +39,21 @@ public class SalesmanViewController extends AbstractBrowserController {
     public TableColumn<OrdersEntity, String> realized;
 
     @FXML
-    @Override
     public void initialize() {
         this.sessionManager = SessionManager.getInstance();
         createTableView();
     }
 
-    @Override
     public void createTableView() {
         tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue != null) {
                 try {
+                    String msg = "" + newValue.getOrderId();
+                    ControllerCommunicator.getInstance().setMsg(msg);
                     App.setRoot("orderDetailsView");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-//        showDetails(newValue.getOrderId());
             }
         });
 
@@ -55,19 +69,4 @@ public class SalesmanViewController extends AbstractBrowserController {
         payment.setCellValueFactory(new PropertyValueFactory<>("payment"));
         realized.setCellValueFactory(new PropertyValueFactory<>("realized"));
     }
-
-//  private void showDetails(int orderId) {
-//    try {
-//      FXMLLoader loader = new FXMLLoader(App.class.getResource("orderDetailsView.fxml"));
-//      final Parent parent = FXMLLoader.load(App.class.getResource("orderDetailsView.fxml"));
-//      Stage stage = App.getStage();
-//      stage.setScene(new Scene(parent));
-//      OrderDetailsViewController controller = loader.getController();
-//      controller.setOrderId(orderId);
-//    } catch (IOException e) {
-//      e.printStackTrace();
-//    }
-//  }
-
-
 }
