@@ -1,0 +1,15 @@
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="layout.controllers.ProductViewController"
+            fx:id="productBorderPane" prefWidth="1100" prefHeight="825">
+
+    <center>
+        <Label fx:id="productInfo"/>
+    </center>
+    <stylesheets>
+        <URL value="@configure.css"/>
+    </stylesheets>
+</BorderPane>

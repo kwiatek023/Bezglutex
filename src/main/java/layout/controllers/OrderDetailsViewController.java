@@ -1,6 +1,8 @@
 package layout.controllers;
 
 import database.connection.SessionManager;
+import database.entities.OrdersEntity;
+import database.entities.OrdersProductsEntity;
 import database.entities.ProductsEntity;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,10 +11,12 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import layout.App;
 import layout.communication.ControllerCommunicator;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 
 public class OrderDetailsViewController {
@@ -20,7 +24,7 @@ public class OrderDetailsViewController {
   private final ObservableList<ProductsEntity> productsEntities = FXCollections.observableArrayList();
 
   @FXML
-  public BorderPane DetailsBorderPane;
+  public BorderPane detailsBorderPane;
 
   @FXML
   public TableView<ProductsEntity> tableView;
@@ -38,12 +42,27 @@ public class OrderDetailsViewController {
   public void initialize() {
     sessionManager = SessionManager.getInstance();
 
+    tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+      if (newValue != null) {
+        try {
+          String msg = newValue.getProductId() + " " + newValue.getType();
+          ControllerCommunicator.getInstance().setMsg(msg);
+          App.setRoot("productView");
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    });
+
     String msg = ControllerCommunicator.getInstance().getMsg();
 
     int orderId = Integer.parseInt(msg);
 
     Session session = sessionManager.openSession();
-    Query<ProductsEntity> query = session.createQuery("FROM ProductsEntity", ProductsEntity.class);
+    Query<ProductsEntity> query = session.createQuery("SELECT productsEntity" +
+        " FROM OrdersProductsEntity en WHERE en.orderId = (:orderId)", ProductsEntity.class);
+    query.setParameter("orderId", orderId);
+
     productsEntities.addAll(query.getResultList());
     sessionManager.closeSession();
 
