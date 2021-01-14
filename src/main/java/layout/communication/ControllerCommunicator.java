@@ -7,7 +7,9 @@ public class ControllerCommunicator {
   private ControllerCommunicator() {}
 
   public String getMsg() {
-    return msg;
+    String temporary = msg;
+    msg = null;
+    return temporary;
   }
 
   public void setMsg(String msg) {

@@ -19,6 +19,7 @@ import javafx.stage.Window;
 import layout.App;
 import layout.communication.ControllerCommunicator;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
 import java.io.IOException;
@@ -88,43 +89,51 @@ public class StoreKeeperViewController {
     }
 
     public void addNewSupplyClicked(ActionEvent actionEvent) {
-        Session session = sessionManager.openSession();
-        session.beginTransaction();
-        showChooseSupplierDialog();
-        session.getTransaction().commit();
-        sessionManager.closeSession();
-    }
-
-    private void showChooseSupplierDialog() {
-        ControllerCommunicator controllerCommunicator = ControllerCommunicator.getInstance();
-        controllerCommunicator.setMsg("1");
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.initOwner(App.getStage().getOwner());
-        dialog.setWidth(300);
-        dialog.setHeight(300);
-        dialog.setOnCloseRequest(e -> {
-            dialog.hide();
-            dialog.close();
-        });
-        Window window = dialog.getDialogPane().getScene().getWindow();
-        window.setOnCloseRequest(event -> window.hide());
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(App.class.getResource("supplyDetailsView.fxml"));
+        Session session = null;
+        Transaction tx = null;
 
         try {
+            session = sessionManager.openSession();
+            tx = session.beginTransaction();
 
+            showChooseSupplierDialog();
+            tx.commit();
+
+        }catch (Exception ex) {
+            ex.printStackTrace();
+            tx.rollback();
+        }
+        finally {session.close();}
+    }
+
+    private String showChooseSupplierDialog() {
+        Dialog<ButtonType> dialog = new Dialog<>();
+
+        dialog.setWidth(950);
+        dialog.setHeight(800);
+        dialog.setTitle("Adding new supply");
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.NEXT);
+
+        Window window = dialog.getDialogPane().getScene().getWindow();
+        window.setOnCloseRequest(event -> window.hide());
+
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(App.class.getResource("chooseSupplierView.fxml"));
+
+        try {
             Parent dialogContent = fxmlLoader.load();
-            SupplyDetailsViewController editController = fxmlLoader.<SupplyDetailsViewController>getController();
-//            editController.setItem(item);
-
-
+            ChooseSupplierController chooseSupplierController = fxmlLoader.getController();
             dialog.getDialogPane().setContent(dialogContent);
-
         } catch (IOException e) {
             System.out.println("Couldn't load the dialog");
             e.printStackTrace();
-            return;
         }
+
         Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.NEXT) {
+            return ControllerCommunicator.getInstance().getMsg();
+        }
+
+        return null;
     }
 }

@@ -89,4 +89,8 @@ public class SessionManager {
     public String getSessionsOwner() {
         return sessionsOwner;
     }
+
+    public Session getCurrentSession() {
+        return currentSession;
+    }
 }
