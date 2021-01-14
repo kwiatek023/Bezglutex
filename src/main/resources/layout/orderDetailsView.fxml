@@ -4,13 +4,14 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="layout.controllers.OrderDetailsViewController"
-            fx:id="DetailsBorderPane">
+            fx:id="DetailsBorderPane" prefWidth="1100" prefHeight="825">
 
     <center>
         <TableView fx:id="tableView">
+            <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
             <columns>
                 <TableColumn fx:id="productId" text="product id"/>
-                <TableColumn fx:id="typeOfProduct" text="type"/>
+                <TableColumn fx:id="type" text="type"/>
                 <TableColumn fx:id="price" text="price"/>
             </columns>
         </TableView>
