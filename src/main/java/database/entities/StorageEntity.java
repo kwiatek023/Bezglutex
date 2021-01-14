@@ -7,6 +7,7 @@ import javax.persistence.*;
 public class StorageEntity {
   private int productId;
   private int quantity;
+  private ProductsEntity productsEntity;
 
   @Id
   @Column(name = "product_id", nullable = false)
@@ -26,6 +27,16 @@ public class StorageEntity {
 
   public void setQuantity(int quantity) {
     this.quantity = quantity;
+  }
+
+  @OneToOne
+  @JoinColumn(name = "product_id")
+  public ProductsEntity getProductsEntity() {
+    return productsEntity;
+  }
+
+  public void setProductsEntity(ProductsEntity productsEntity) {
+    this.productsEntity = productsEntity;
   }
 
   @Override
