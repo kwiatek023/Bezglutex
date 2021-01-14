@@ -9,6 +9,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import layout.communication.ControllerCommunicator;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
@@ -37,6 +38,10 @@ public class OrderDetailsViewController {
   public void initialize() {
     sessionManager = SessionManager.getInstance();
 
+    String msg = ControllerCommunicator.getInstance().getMsg();
+
+    int orderId = Integer.parseInt(msg);
+
     Session session = sessionManager.openSession();
     Query<ProductsEntity> query = session.createQuery("FROM ProductsEntity", ProductsEntity.class);
     productsEntities.addAll(query.getResultList());
@@ -48,5 +53,4 @@ public class OrderDetailsViewController {
     type.setCellValueFactory(new PropertyValueFactory<>("type"));
     price.setCellValueFactory(new PropertyValueFactory<>("price"));
   }
-
 }
