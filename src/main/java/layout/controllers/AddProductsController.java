@@ -13,9 +13,10 @@ import java.util.Optional;
 
 public class AddProductsController {
     private int supplyId;
+    private boolean supplyIsEmpty = true;
 
     public boolean supplyIsEmpty() {
-        return false;
+        return supplyIsEmpty;
     }
 
     public void setSupplyId(int supplyId) {
@@ -50,12 +51,10 @@ public class AddProductsController {
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.CLOSE) {
-//            if(addProductsController.supplyIsEmpty()) {
-//                return ControllerCommunicator.getInstance().getMsg();
-//            }
+            if(addBreadstuffController.isAnythingIsAdded()) {
+                supplyIsEmpty = false;
+            }
         }
-
-//        return null;
     }
 
     public void addPasta(ActionEvent actionEvent) {

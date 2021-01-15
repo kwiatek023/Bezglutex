@@ -3,6 +3,7 @@ package layout.controllers;
 import database.BreadstuffType;
 import database.connection.SessionManager;
 import database.entities.BreadstuffEntity;
+import database.entities.ProductsEntity;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,7 +15,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.stage.Window;
-import layout.exceptions.FailedAddingSupplierException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
@@ -25,6 +25,7 @@ import java.util.Optional;
 
 public class AddBreadstuffController {
     private int supplyId;
+    private boolean anythingIsAdded = false;
     private SessionManager sessionManager;
     private final ObservableList<BreadstuffEntity> breadstuffEntities = FXCollections.observableArrayList();
 
@@ -56,7 +57,7 @@ public class AddBreadstuffController {
     public TextField nettoWeightTextField;
 
     @FXML
-    public TextField piecesPerPackageField;
+    public TextField piecesPerPackageTextField;
 
     @FXML
     public TextField energyValueTextField;
@@ -117,8 +118,6 @@ public class AddBreadstuffController {
         hbox.getChildren().addAll(label, textField);
         dialog.getDialogPane().setContent(hbox);
 
-
-
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
@@ -154,10 +153,52 @@ public class AddBreadstuffController {
                 .setParameter("_supply_id", supplyId)
                 .setParameter("_quantity", quantity);
         procedureQuery.execute();
+        anythingIsAdded = true;
+    }
+
+    public void addNewBreadstuffClicked(ActionEvent actionEvent) {
+        boolean allDataFilled = typeBox.getSelectionModel().getSelectedItem() != null &&
+                !nettoWeightTextField.getText().isBlank() && !piecesPerPackageTextField.getText().isBlank() &&
+                !energyValueTextField.getText().isBlank() && !priceTextField.getText().isBlank();
+
+        if (allDataFilled) {
+            try {
+                BreadstuffEntity breadstuff = new BreadstuffEntity();
+                breadstuff.setType(typeBox.getSelectionModel().getSelectedItem());
+                breadstuff.setNettoWeight(Integer.parseInt(nettoWeightTextField.getText()));
+                breadstuff.setPiecesPerPackage(Integer.parseInt(piecesPerPackageTextField.getText()));
+                breadstuff.setEnergyValue(Integer.parseInt(energyValueTextField.getText()));
+                breadstuff.setProductsEntity(new ProductsEntity());
+                breadstuff.getProductsEntity().setPrice(new BigDecimal(priceTextField.getText()));
+
+                Integer quantity = showSelectQuantityDialog();
+                if(quantity != null) {
+                    addBreadstuff(breadstuff, quantity);
+                    displayInfoAlert("Products successfully added to new supply");
+                }
+
+            } catch(NumberFormatException numberFormatException) {
+                displayErrorAlert("Incorrect data. Try again.");
+            } catch (Exception ex) {
+                displayErrorAlert("Operation failed");
+            }
+        } else {
+            displayErrorAlert("Fill all data to add new product.");
+        }
+
+        typeBox.setValue(null);
+        nettoWeightTextField.setText("");
+        piecesPerPackageTextField.setText("");
+        energyValueTextField.setText("");
+        priceTextField.setText("");
     }
 
     public void setSupplyId(int supplyId) {
         this.supplyId = supplyId;
+    }
+
+    public boolean isAnythingIsAdded() {
+        return anythingIsAdded;
     }
 
     private void displayInfoAlert(String contextText) {
@@ -174,38 +215,5 @@ public class AddBreadstuffController {
         alert.setHeaderText(null);
         alert.setContentText(contextText);
         alert.showAndWait();
-    }
-
-    public void addNewBreadstuffClicked(ActionEvent actionEvent) {
-        boolean allDataFilled = typeBox.getSelectionModel().getSelectedItem() != null &&
-                !nettoWeight.getText().isBlank() && !piecesPerPackage.getText().isBlank() &&
-                !energyValue.getText().isBlank() && !price.getText().isBlank();
-
-        if (allDataFilled) {
-            try {
-                BreadstuffEntity breadstuff =  new BreadstuffEntity();
-                breadstuff.setType(typeBox.getSelectionModel().getSelectedItem());
-                breadstuff.set
-                addBreadstuff(typeBox.getSelectionModel().getSelectedItem(), nettoWeight.getText(), piecesPerPackage.getText(),
-                        energyValue.getText(), price.getText(), streetTextField.getText(), postalCodeTextField.getText());
-                return true;
-            } catch(FailedAddingSupplierException failedAddingSupplierException) {
-                displayErrorAlert("This supplier exists.");
-            } catch (Exception ex) {
-                displayErrorAlert("Operation failed");
-            }
-        } else {
-            displayErrorAlert("Fill all data to add supplier.");
-        }
-
-        nameTextField.setText("");
-        nipTextField.setText("");
-        emailTextField.setText("");
-        countryTextField.setText("");
-        cityTextField.setText("");
-        streetTextField.setText("");
-        postalCodeTextField.setText("");
-
-        return false;
     }
 }

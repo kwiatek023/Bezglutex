@@ -38,7 +38,7 @@
             <HBox alignment="BOTTOM_CENTER">
                 <ComboBox fx:id="typeBox" promptText="Type of breadstuff"/>
                 <TextField fx:id="nettoWeightTextField" promptText="Netto weight"/>
-                <TextField fx:id="piecesPerPackageField" promptText="Pieces per package"/>
+                <TextField fx:id="piecesPerPackageTextField" promptText="Pieces per package"/>
             </HBox>
             <HBox alignment="BOTTOM_CENTER">
                 <TextField fx:id="energyValueTextField" promptText="Energy value"/>
