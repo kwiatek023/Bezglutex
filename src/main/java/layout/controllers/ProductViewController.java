@@ -13,7 +13,6 @@ import org.hibernate.query.Query;
 
 public class ProductViewController {
   private SessionManager sessionManager;
-  private int orderId;
   private int productId;
   String productType;
 
@@ -27,11 +26,10 @@ public class ProductViewController {
   public void initialize() {
     sessionManager = SessionManager.getInstance();
 
-    // msg format: "orderId productId productType"
+    // msg format: "productId productType"
     String[] msg = ControllerCommunicator.getInstance().getMsg().split(" ");
-    orderId = Integer.parseInt(msg[0]);
-    productId = Integer.parseInt(msg[1]);
-    productType = msg[2];
+    productId = Integer.parseInt(msg[0]);
+    productType = msg[1];
     
     Session session = sessionManager.openSession();
     switch (productType) {
@@ -40,8 +38,8 @@ public class ProductViewController {
         query.setParameter("productId", productId);
         
         BreadstuffEntity product = query.getSingleResult();
-        productInfo.setText("Energy value: " + product.getEnergyValue() + "\n" + 
-                            "Netto weight: " + product.getNettoWeight() + "\n" +
+        productInfo.setText("Energy value: " + product.getEnergyValue() + " kcal\n" +
+                            "Netto weight: " + product.getNettoWeight() + "g\n" +
                             "Pieces per package: " + product.getPiecesPerPackage() + "\n" +
                             "Type: " + product.getType() + "\n"
         );
@@ -52,9 +50,9 @@ public class ProductViewController {
         query.setParameter("productId", productId);
 
         PastaEntity product = query.getSingleResult();
-        productInfo.setText("Energy value: " + product.getEnergyValue() + "\n" +
-            "Netto weight: " + product.getNettoWeight() + "\n" +
-            "Boil time: " + product.getBoilTime() + "\n" +
+        productInfo.setText("Energy value: " + product.getEnergyValue() + " kcal\n" +
+            "Netto weight: " + product.getNettoWeight() + "g\n" +
+            "Boil time: " + product.getBoilTime() + "s\n" +
             "Type: " + product.getType() + "\n"
         );
         break;
@@ -65,8 +63,8 @@ public class ProductViewController {
 
         DessertsEntity product = query.getSingleResult();
         productInfo.setText("Name: " + product.getName() + "\n" +
-            "Energy value: " + product.getEnergyValue() + "\n" +
-            "Netto weight: " + product.getNettoWeight() + "\n" +
+            "Energy value: " + product.getEnergyValue() + " kcal\n" +
+            "Netto weight: " + product.getNettoWeight() + "g\n" +
             "Dairy free: " + product.getDairyFree() + "\n"
         );
         break;

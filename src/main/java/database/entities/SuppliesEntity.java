@@ -4,7 +4,9 @@ import database.PaymentType;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -14,7 +16,7 @@ public class SuppliesEntity {
   private Date date;
   private PaymentType payment;
   private SuppliersEntity suppliersEntity;
-  private Set<SuppliesProductsEntity> suppliesProductsEntities = new HashSet<>();
+  private List<SuppliesProductsEntity> suppliesProductsEntities = new ArrayList<>();
 
   @Id
   @GeneratedValue
@@ -58,12 +60,12 @@ public class SuppliesEntity {
     this.suppliersEntity = suppliersEntity;
   }
 
-  @OneToMany(mappedBy = "supplyId", cascade = CascadeType.ALL)
-  public Set<SuppliesProductsEntity> getSuppliesProductsEntities() {
+  @OneToMany(mappedBy = "suppliesEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  public List<SuppliesProductsEntity> getSuppliesProductsEntities() {
     return suppliesProductsEntities;
   }
 
-  public void setSuppliesProductsEntities(Set<SuppliesProductsEntity> suppliesProductsEntities) {
+  public void setSuppliesProductsEntities(List<SuppliesProductsEntity> suppliesProductsEntities) {
     this.suppliesProductsEntities = suppliesProductsEntities;
   }
 

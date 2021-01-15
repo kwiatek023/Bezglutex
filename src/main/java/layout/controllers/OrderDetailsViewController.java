@@ -41,9 +41,6 @@ public class OrderDetailsViewController {
   public Button realizeButton;
 
   @FXML
-  public BorderPane detailsBorderPane;
-
-  @FXML
   public TableView<OrdersProductsEntity> tableView;
 
   @FXML
@@ -103,7 +100,7 @@ public class OrderDetailsViewController {
     Window window = dialog.getDialogPane().getScene().getWindow();
     window.setOnCloseRequest(event -> window.hide());
 
-    String msg = orderId + " " + ordersProducts.getProductsEntity().getProductId() + " " + ordersProducts.getProductsEntity().getType();
+    String msg = ordersProducts.getProductsEntity().getProductId() + " " + ordersProducts.getProductsEntity().getType();
     ControllerCommunicator.getInstance().setMsg(msg);
 
     FXMLLoader fxmlLoader = new FXMLLoader();
@@ -146,7 +143,7 @@ public class OrderDetailsViewController {
       totalCost = totalCost.add(ordersProductsEntity.getProductsEntity().getPrice().multiply(new BigDecimal(ordersProductsEntity.getQuantity())));
     }
 
-    total.setText("Total: " + totalCost+ "           ");
+    total.setText("Total: " + totalCost + "           ");
   }
   
   private void setCustomerData() {

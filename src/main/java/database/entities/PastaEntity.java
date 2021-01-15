@@ -11,6 +11,7 @@ public class PastaEntity {
   private int nettoWeight;
   private int energyValue;
   private int boilTime;
+  private ProductsEntity productsEntity;
 
   @Id
   @Column(name = "product_id", nullable = false)
@@ -61,6 +62,16 @@ public class PastaEntity {
 
   public void setBoilTime(int boilTime) {
     this.boilTime = boilTime;
+  }
+
+  @OneToOne
+  @JoinColumn(name = "product_id")
+  public ProductsEntity getProductsEntity() {
+    return productsEntity;
+  }
+
+  public void setProductsEntity(ProductsEntity productsEntity) {
+    this.productsEntity = productsEntity;
   }
 
   @Override

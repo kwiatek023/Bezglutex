@@ -6,18 +6,18 @@ import java.io.Serializable;
 @Entity
 @Table(name = "supplies_products", schema = "bezglutex")
 public class SuppliesProductsEntity implements Serializable {
-  private int supplyId;
+  private SuppliesProductsEntityPK id = new SuppliesProductsEntityPK();
   private int quantity;
+  private SuppliesEntity suppliesEntity;
   private ProductsEntity productsEntity;
 
-  @Id
-  @Column(name = "supply_id", nullable = false)
-  public int getSupplyId() {
-    return supplyId;
+  @EmbeddedId
+  public SuppliesProductsEntityPK getId() {
+    return id;
   }
 
-  public void setSupplyId(int supplyId) {
-    this.supplyId = supplyId;
+  public void setId(SuppliesProductsEntityPK id) {
+    this.id = id;
   }
 
   @Basic
@@ -30,7 +30,19 @@ public class SuppliesProductsEntity implements Serializable {
     this.quantity = quantity;
   }
 
-  @OneToOne
+  @ManyToOne
+  @MapsId("supplyId")
+  @JoinColumn(name = "supply_id")
+  public SuppliesEntity getSuppliesEntity() {
+    return suppliesEntity;
+  }
+
+  public void setSuppliesEntity(SuppliesEntity suppliesEntity) {
+    this.suppliesEntity = suppliesEntity;
+  }
+
+  @ManyToOne
+  @MapsId("productId")
   @JoinColumn(name = "product_id")
   public ProductsEntity getProductsEntity() {
     return productsEntity;
@@ -48,7 +60,7 @@ public class SuppliesProductsEntity implements Serializable {
 
     SuppliesProductsEntity that = (SuppliesProductsEntity) o;
 
-    if (supplyId != that.supplyId) return false;
+    if (suppliesEntity.getSupplyId() != that.getSuppliesEntity().getSupplyId()) return false;
     if (productsEntity != that.productsEntity) return false;
     if (quantity != that.quantity) return false;
 
@@ -57,7 +69,7 @@ public class SuppliesProductsEntity implements Serializable {
 
   @Override
   public int hashCode() {
-    int result = supplyId;
+    int result = suppliesEntity.getSupplyId();
     result = 31 * result + productsEntity.getProductId();
     result = 31 * result + quantity;
     return result;
