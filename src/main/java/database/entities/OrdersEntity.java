@@ -2,8 +2,8 @@ package database.entities;
 import database.PaymentType;
 import javax.persistence.*;
 import java.sql.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "orders", schema = "bezglutex")
@@ -13,11 +13,11 @@ public class OrdersEntity {
   private PaymentType payment;
   private boolean realized;
   private CustomersEntity customersEntity;
-  private Set<OrdersProductsEntity> ordersProductsEntities = new HashSet<>();
+  private List<OrdersProductsEntity> ordersProductsEntities = new ArrayList<>();
 
   @Id
-  @GeneratedValue
   @Column(name = "order_id", nullable = false)
+  @GeneratedValue
   public int getOrderId() {
     return orderId;
   }
@@ -67,12 +67,12 @@ public class OrdersEntity {
     this.customersEntity = customersEntity;
   }
 
-  @OneToMany(mappedBy = "orderId", cascade = CascadeType.ALL)
-  public Set<OrdersProductsEntity> getOrdersProductsEntities() {
+  @OneToMany(mappedBy = "ordersEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  public List<OrdersProductsEntity> getOrdersProductsEntities() {
     return ordersProductsEntities;
   }
 
-  public void setOrdersProductsEntities(Set<OrdersProductsEntity> ordersProductsEntities) {
+  public void setOrdersProductsEntities(List<OrdersProductsEntity> ordersProductsEntities) {
     this.ordersProductsEntities = ordersProductsEntities;
   }
 
