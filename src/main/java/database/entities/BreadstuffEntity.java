@@ -11,6 +11,7 @@ public class BreadstuffEntity {
   private int nettoWeight;
   private int piecesPerPackage;
   private int energyValue;
+  private ProductsEntity productsEntity;
 
   @Id
   @Column(name = "product_id", nullable = false)
@@ -61,6 +62,16 @@ public class BreadstuffEntity {
 
   public void setEnergyValue(int energyValue) {
     this.energyValue = energyValue;
+  }
+
+  @OneToOne
+  @JoinColumn(name = "product_id")
+  public ProductsEntity getProductsEntity() {
+    return productsEntity;
+  }
+
+  public void setProductsEntity(ProductsEntity productsEntity) {
+    this.productsEntity = productsEntity;
   }
 
   @Override
