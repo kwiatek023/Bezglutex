@@ -4,7 +4,6 @@ import database.connection.SessionManager;
 import database.entities.SuppliersEntity;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
@@ -12,6 +11,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import layout.communication.ControllerCommunicator;
+import layout.exceptions.FailedAddingSupplierException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
@@ -19,6 +19,7 @@ import javax.persistence.ParameterMode;
 import javax.persistence.StoredProcedureQuery;
 
 public class ChooseSupplierController {
+    private Integer chosenSupplierId = null;
     private Session session;
     private final ObservableList<SuppliersEntity> suppliersEntities = FXCollections.observableArrayList();
 
@@ -76,15 +77,10 @@ public class ChooseSupplierController {
     public void createTableView() {
         tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue != null) {
-                String msg = "" + newValue.getSupplierId();
-                ControllerCommunicator.getInstance().setMsg(msg);
+                chosenSupplierId = newValue.getSupplierId();
             }
         });
 
-        addEntities();
-    }
-
-    private void addEntities() {
         Query<SuppliersEntity> query = session.createQuery("FROM SuppliersEntity ", SuppliersEntity.class);
         suppliersEntities.addAll(query.getResultList());
 
@@ -99,16 +95,19 @@ public class ChooseSupplierController {
         email.setCellValueFactory(new PropertyValueFactory<>("email"));
     }
 
-    public void addSupplierClicked(ActionEvent actionEvent) {
+    public boolean supplierAddedSuccessfully() {
         boolean allDataFilled = !nameTextField.getText().isBlank() &&
-                !nipTextField.getText().isBlank() && !email.getText().isBlank() &&
+                !nipTextField.getText().isBlank() && !emailTextField.getText().isBlank() &&
                 !countryTextField.getText().isBlank() && !cityTextField.getText().isBlank() &&
-                !street.getText().isBlank() && !postalCode.getText().isBlank();
+                !streetTextField.getText().isBlank() && !postalCodeTextField.getText().isBlank();
 
         if (allDataFilled) {
             try {
-                addSupplier(nameTextField.getText(), nipTextField.getText(), email.getText(),
-                        countryTextField.getText(), cityTextField.getText(), street.getText(), postalCode.getText());
+                addSupplier(nameTextField.getText(), nipTextField.getText(), emailTextField.getText(),
+                        countryTextField.getText(), cityTextField.getText(), streetTextField.getText(), postalCodeTextField.getText());
+                return true;
+            } catch(FailedAddingSupplierException failedAddingSupplierException) {
+                displayErrorAlert("This supplier exists.");
             } catch (Exception ex) {
                 displayErrorAlert("Operation failed");
             }
@@ -123,13 +122,14 @@ public class ChooseSupplierController {
         cityTextField.setText("");
         streetTextField.setText("");
         postalCodeTextField.setText("");
+
+        return false;
     }
 
-    private void addSupplier(String name, String nip, String email, String country, String city, String street, String postalCode) {
+    private void addSupplier(String name, String nip, String email, String country, String city, String street, String postalCode) throws FailedAddingSupplierException {
         for(SuppliersEntity supplier: suppliersEntities) {
             if(supplier.getName().equals(name)) {
-                displayErrorAlert("This supplier exists.");
-                return;
+                throw new FailedAddingSupplierException();
             }
         }
 
@@ -141,18 +141,13 @@ public class ChooseSupplierController {
                 .registerStoredProcedureParameter("street", String.class, ParameterMode.IN)
                 .registerStoredProcedureParameter("postalCode", String.class, ParameterMode.IN)
                 .registerStoredProcedureParameter("email", String.class, ParameterMode.IN)
+                .registerStoredProcedureParameter("id", Integer.class, ParameterMode.OUT)
                 .setParameter("name", name).setParameter("nip", nip).setParameter("country", country)
                 .setParameter("city", city).setParameter("street", street)
                 .setParameter("postalCode", postalCode).setParameter("email", email);
 
         procedureQuery.execute();
-        updateTable();
-    }
-
-    private void updateTable() {
-        suppliersEntities.removeAll();
-        tableView.setItems(null);
-        addEntities();
+        chosenSupplierId = (Integer) procedureQuery.getOutputParameterValue("id");
     }
 
     private void displayErrorAlert(String contextText) {
@@ -161,5 +156,27 @@ public class ChooseSupplierController {
         alert.setHeaderText(null);
         alert.setContentText(contextText);
         alert.showAndWait();
+    }
+
+    public boolean supplierIsChosen() {
+        boolean someDataFilled = !nameTextField.getText().isBlank() ||
+                !nipTextField.getText().isBlank() || !emailTextField.getText().isBlank() ||
+                !countryTextField.getText().isBlank() || !cityTextField.getText().isBlank() ||
+                !streetTextField.getText().isBlank() || !postalCodeTextField.getText().isBlank();
+
+        if(someDataFilled) {
+            if(supplierAddedSuccessfully()) {
+                ControllerCommunicator.getInstance().setMsg(chosenSupplierId.toString());
+                return true;
+            }
+        } else {
+            if(chosenSupplierId != null) {
+                ControllerCommunicator.getInstance().setMsg(chosenSupplierId.toString());
+                return true;
+            }
+            displayErrorAlert("You have to choose a supplier!");
+        }
+
+        return false;
     }
 }

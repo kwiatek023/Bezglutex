@@ -13,7 +13,7 @@
     <top>
         <VBox alignment="TOP_CENTER" spacing="10.0">
             <!--suppress JavaFxUnresolvedFxIdReference -->
-            <Label fx:id="infoLabel" text="Select supplier for this supply: "/>
+            <Label fx:id="infoLabel" text="Select supplier from existing suppliers or fill data for new supplier and click Next"/>
             <padding>
                 <Insets top="10" bottom="10" left="10" right="10"/>
             </padding>
@@ -48,13 +48,9 @@
                 <TextField fx:id="cityTextField" promptText="City"/>
                 <TextField fx:id="streetTextField" promptText="Street"/>
                 <TextField fx:id="postalCodeTextField" promptText="Postal code"/>
-
-
-                <!--suppress JavaFxUnresolvedFxIdReference -->
-                <Button fx:id="addSupplierButton" text="Add supplier" onAction="#addSupplierClicked"/>
             </HBox>
         </VBox>
-</bottom>
+    </bottom>
     <stylesheets>
         <URL value="@configure.css"/>
     </stylesheets>

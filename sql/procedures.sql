@@ -37,7 +37,7 @@ DELIMITER ;
 
 DELIMITER $$
 CREATE OR REPLACE PROCEDURE add_supplier(IN name VARCHAR(45), IN NIP VARCHAR(16), IN country VARCHAR(45),
-                                         IN city VARCHAR(45), IN street VARCHAR(45), IN postal_code VARCHAR(16), IN email VARCHAR(120))
+                                         IN city VARCHAR(45), IN street VARCHAR(45), IN postal_code VARCHAR(16), IN email VARCHAR(120), OUT id INT)
 BEGIN
     SET @str = 'INSERT INTO suppliers (name, NIP, country, city, street, postal_code, email) VALUES (?, ?, ?, ?, ?, ?, ?);';
 
@@ -45,13 +45,16 @@ BEGIN
     EXECUTE stmt USING name, NIP, country, city, street, postal_code, email;
     DEALLOCATE PREPARE stmt;
 
+    SET id = LAST_INSERT_ID();
 END;$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE OR REPLACE PROCEDURE add_supply(IN _supplier_id INT, IN _payment VARCHAR(16))
+CREATE OR REPLACE PROCEDURE add_supply(IN _supplier_id INT, IN _payment VARCHAR(16), OUT id INT)
 BEGIN
     INSERT INTO supplies (supplier_id, date, payment) VALUES (_supplier_id, (SELECT NOW()), _payment);
+
+    SET id = LAST_INSERT_ID();
 END;$$
 
 DELIMITER ;

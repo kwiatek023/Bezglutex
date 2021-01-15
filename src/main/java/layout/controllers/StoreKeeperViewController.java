@@ -1,5 +1,6 @@
 package layout.controllers;
 
+import database.PaymentType;
 import database.connection.SessionManager;
 import database.entities.SuppliesEntity;
 import javafx.beans.property.SimpleStringProperty;
@@ -22,6 +23,8 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureQuery;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -96,17 +99,23 @@ public class StoreKeeperViewController {
             session = sessionManager.openSession();
             tx = session.beginTransaction();
 
-            showChooseSupplierDialog();
+            int supplierId = Integer.parseInt(showChooseSupplierDialog());
+            String paymentType = PaymentType.convertUILabelToDBLabel(showChoosePaymentDialog());
+            SuppliesEntity suppliesEntity = addSupply(supplierId, paymentType);
+            showAddProductsDialog(suppliesEntity.getSupplyId());
+
             tx.commit();
 
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             tx.rollback();
         }
-        finally {session.close();}
+        finally {
+            session.close();
+        }
     }
 
-    private String showChooseSupplierDialog() {
+    private String showChooseSupplierDialog() throws Exception {
         Dialog<ButtonType> dialog = new Dialog<>();
 
         dialog.setWidth(950);
@@ -120,20 +129,114 @@ public class StoreKeeperViewController {
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(App.class.getResource("chooseSupplierView.fxml"));
 
+        ChooseSupplierController chooseSupplierController = null;
         try {
             Parent dialogContent = fxmlLoader.load();
-            ChooseSupplierController chooseSupplierController = fxmlLoader.getController();
+            chooseSupplierController = fxmlLoader.getController();
             dialog.getDialogPane().setContent(dialogContent);
         } catch (IOException e) {
             System.out.println("Couldn't load the dialog");
             e.printStackTrace();
         }
 
+
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.NEXT) {
-            return ControllerCommunicator.getInstance().getMsg();
+            if(chooseSupplierController.supplierIsChosen()) {
+                return ControllerCommunicator.getInstance().getMsg();
+            } else {
+                return showChooseSupplierDialog();
+            }
         }
 
         return null;
+    }
+
+    private String showChoosePaymentDialog() {
+        Dialog<ButtonType> dialog = new Dialog<>();
+
+        dialog.setWidth(950);
+        dialog.setHeight(800);
+        dialog.setTitle("Adding new supply");
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.NEXT);
+
+        Window window = dialog.getDialogPane().getScene().getWindow();
+        window.setOnCloseRequest(event -> window.hide());
+
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(App.class.getResource("choosePaymentView.fxml"));
+
+        ChoosePaymentController choosePaymentController = null;
+        try {
+            Parent dialogContent = fxmlLoader.load();
+            choosePaymentController = fxmlLoader.getController();
+            dialog.getDialogPane().setContent(dialogContent);
+        } catch (IOException e) {
+            System.out.println("Couldn't load the dialog");
+            e.printStackTrace();
+        }
+
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.NEXT) {
+            if(choosePaymentController.isPaymentChosen()) {
+                return ControllerCommunicator.getInstance().getMsg();
+            }
+
+            return showChoosePaymentDialog();
+        }
+
+        return null;
+    }
+
+    private SuppliesEntity addSupply(int supplierId, String paymentType) {
+        StoredProcedureQuery procedureQuery = sessionManager.getCurrentSession().createStoredProcedureQuery("add_supply").
+                registerStoredProcedureParameter("_supplier_id", Integer.class, ParameterMode.IN)
+                .registerStoredProcedureParameter("_payment", String.class, ParameterMode.IN)
+                .registerStoredProcedureParameter("id", Integer.class, ParameterMode.OUT)
+                .setParameter("_supplier_id", supplierId).setParameter("_payment", paymentType);
+        procedureQuery.execute();
+        Integer addedSupplyId = (Integer) procedureQuery.getOutputParameterValue("id");
+
+        Query<SuppliesEntity> supplyQuery  = sessionManager.getCurrentSession().
+                createQuery("FROM SuppliesEntity WHERE supplyId = (:supplyId)", SuppliesEntity.class)
+                .setParameter("supplyId", addedSupplyId);
+       return supplyQuery.getSingleResult();
+    }
+
+    private void showAddProductsDialog(int supplyId) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+
+        dialog.setWidth(950);
+        dialog.setHeight(800);
+        dialog.setTitle("Adding new supply");
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.FINISH);
+
+        Window window = dialog.getDialogPane().getScene().getWindow();
+        window.setOnCloseRequest(event -> window.hide());
+
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(App.class.getResource("addProductsView.fxml"));
+
+        AddProductsController addProductsController = null;
+        try {
+            Parent dialogContent = fxmlLoader.load();
+            addProductsController = fxmlLoader.getController();
+            addProductsController.setSupplyId(supplyId);
+            dialog.getDialogPane().setContent(dialogContent);
+        } catch (IOException e) {
+            System.out.println("Couldn't load the dialog");
+            e.printStackTrace();
+        }
+
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.FINISH) {
+            if(addProductsController.supplyIsEmpty()) {
+//                return ControllerCommunicator.getInstance().getMsg();
+            }
+        }
+
+//        return null;
     }
 }
