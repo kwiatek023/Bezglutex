@@ -1,5 +1,6 @@
 package layout.controllers;
 
+import database.PaymentType;
 import database.connection.SessionManager;
 import database.entities.SuppliesEntity;
 import javafx.beans.property.SimpleStringProperty;
@@ -19,8 +20,11 @@ import javafx.stage.Window;
 import layout.App;
 import layout.communication.ControllerCommunicator;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureQuery;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -88,43 +92,151 @@ public class StoreKeeperViewController {
     }
 
     public void addNewSupplyClicked(ActionEvent actionEvent) {
-        Session session = sessionManager.openSession();
-        session.beginTransaction();
-        showChooseSupplierDialog();
-        session.getTransaction().commit();
-        sessionManager.closeSession();
-    }
-
-    private void showChooseSupplierDialog() {
-        ControllerCommunicator controllerCommunicator = ControllerCommunicator.getInstance();
-        controllerCommunicator.setMsg("1");
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.initOwner(App.getStage().getOwner());
-        dialog.setWidth(300);
-        dialog.setHeight(300);
-        dialog.setOnCloseRequest(e -> {
-            dialog.hide();
-            dialog.close();
-        });
-        Window window = dialog.getDialogPane().getScene().getWindow();
-        window.setOnCloseRequest(event -> window.hide());
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(App.class.getResource("supplyDetailsView.fxml"));
+        Session session = null;
+        Transaction tx = null;
 
         try {
+            session = sessionManager.openSession();
+            tx = session.beginTransaction();
 
+            int supplierId = Integer.parseInt(showChooseSupplierDialog());
+            String paymentType = PaymentType.convertUILabelToDBLabel(showChoosePaymentDialog());
+            SuppliesEntity suppliesEntity = addSupply(supplierId, paymentType);
+            showAddProductsDialog(suppliesEntity.getSupplyId());
+
+            tx.commit();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            tx.rollback();
+        }
+        finally {
+            session.close();
+        }
+    }
+
+    private String showChooseSupplierDialog() throws Exception {
+        Dialog<ButtonType> dialog = new Dialog<>();
+
+        dialog.setWidth(950);
+        dialog.setHeight(800);
+        dialog.setTitle("Adding new supply");
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.NEXT);
+
+        Window window = dialog.getDialogPane().getScene().getWindow();
+        window.setOnCloseRequest(event -> window.hide());
+
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(App.class.getResource("chooseSupplierView.fxml"));
+
+        ChooseSupplierController chooseSupplierController = null;
+        try {
             Parent dialogContent = fxmlLoader.load();
-            SupplyDetailsViewController editController = fxmlLoader.<SupplyDetailsViewController>getController();
-//            editController.setItem(item);
-
-
+            chooseSupplierController = fxmlLoader.getController();
             dialog.getDialogPane().setContent(dialogContent);
-
         } catch (IOException e) {
             System.out.println("Couldn't load the dialog");
             e.printStackTrace();
-            return;
         }
+
+
         Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.NEXT) {
+            if(chooseSupplierController.supplierIsChosen()) {
+                return ControllerCommunicator.getInstance().getMsg();
+            } else {
+                return showChooseSupplierDialog();
+            }
+        }
+
+        return null;
+    }
+
+    private String showChoosePaymentDialog() {
+        Dialog<ButtonType> dialog = new Dialog<>();
+
+        dialog.setWidth(950);
+        dialog.setHeight(800);
+        dialog.setTitle("Adding new supply");
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.NEXT);
+
+        Window window = dialog.getDialogPane().getScene().getWindow();
+        window.setOnCloseRequest(event -> window.hide());
+
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(App.class.getResource("choosePaymentView.fxml"));
+
+        ChoosePaymentController choosePaymentController = null;
+        try {
+            Parent dialogContent = fxmlLoader.load();
+            choosePaymentController = fxmlLoader.getController();
+            dialog.getDialogPane().setContent(dialogContent);
+        } catch (IOException e) {
+            System.out.println("Couldn't load the dialog");
+            e.printStackTrace();
+        }
+
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.NEXT) {
+            if(choosePaymentController.isPaymentChosen()) {
+                return ControllerCommunicator.getInstance().getMsg();
+            }
+
+            return showChoosePaymentDialog();
+        }
+
+        return null;
+    }
+
+    private SuppliesEntity addSupply(int supplierId, String paymentType) {
+        StoredProcedureQuery procedureQuery = sessionManager.getCurrentSession().createStoredProcedureQuery("add_supply").
+                registerStoredProcedureParameter("_supplier_id", Integer.class, ParameterMode.IN)
+                .registerStoredProcedureParameter("_payment", String.class, ParameterMode.IN)
+                .registerStoredProcedureParameter("id", Integer.class, ParameterMode.OUT)
+                .setParameter("_supplier_id", supplierId).setParameter("_payment", paymentType);
+        procedureQuery.execute();
+        Integer addedSupplyId = (Integer) procedureQuery.getOutputParameterValue("id");
+
+        Query<SuppliesEntity> supplyQuery  = sessionManager.getCurrentSession().
+                createQuery("FROM SuppliesEntity WHERE supplyId = (:supplyId)", SuppliesEntity.class)
+                .setParameter("supplyId", addedSupplyId);
+       return supplyQuery.getSingleResult();
+    }
+
+    private void showAddProductsDialog(int supplyId) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+
+        dialog.setWidth(950);
+        dialog.setHeight(800);
+        dialog.setTitle("Adding new supply");
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.FINISH);
+
+        Window window = dialog.getDialogPane().getScene().getWindow();
+        window.setOnCloseRequest(event -> window.hide());
+
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(App.class.getResource("addProductsView.fxml"));
+
+        AddProductsController addProductsController = null;
+        try {
+            Parent dialogContent = fxmlLoader.load();
+            addProductsController = fxmlLoader.getController();
+            addProductsController.setSupplyId(supplyId);
+            dialog.getDialogPane().setContent(dialogContent);
+        } catch (IOException e) {
+            System.out.println("Couldn't load the dialog");
+            e.printStackTrace();
+        }
+
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.FINISH) {
+            if(addProductsController.supplyIsEmpty()) {
+//                return ControllerCommunicator.getInstance().getMsg();
+            }
+        }
+
+//        return null;
     }
 }
