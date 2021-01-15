@@ -34,16 +34,20 @@
     </center>
     <bottom>
         <VBox>
+            <Label fx:id="infoLabel2" text="If in supply appeared new products you can add them: "/>
             <HBox alignment="BOTTOM_CENTER">
-                <TextField fx:id="typeTextField" promptText="Type of breadstuff"/>
+                <ComboBox fx:id="typeBox" promptText="Type of breadstuff"/>
                 <TextField fx:id="nettoWeightTextField" promptText="Netto weight"/>
-                <TextField fx:id="piecesPerPackageField" promptText="Pieces per package"/>
+                <TextField fx:id="piecesPerPackageTextField" promptText="Pieces per package"/>
             </HBox>
             <HBox alignment="BOTTOM_CENTER">
                 <TextField fx:id="energyValueTextField" promptText="Energy value"/>
                 <TextField fx:id="priceTextField" promptText="Price"/>
-                <TextField fx:id="quantityTextField" promptText="Quantity"/>
+                <Button fx:id="addNewBreadstuffButton" alignment="BOTTOM_RIGHT" mnemonicParsing="false" text="Add product" onAction="#addNewBreadstuffClicked"/>
             </HBox>
+            <padding>
+                <Insets top="10" bottom="10" left="10" right="10"/>
+            </padding>
         </VBox>
     </bottom>
     <stylesheets>

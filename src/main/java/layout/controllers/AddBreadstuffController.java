@@ -1,10 +1,13 @@
 package layout.controllers;
 
+import database.BreadstuffType;
 import database.connection.SessionManager;
 import database.entities.BreadstuffEntity;
+import database.entities.ProductsEntity;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -15,14 +18,16 @@ import javafx.stage.Window;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureQuery;
 import java.math.BigDecimal;
 import java.util.Optional;
 
 public class AddBreadstuffController {
     private int supplyId;
+    private boolean anythingIsAdded = false;
     private SessionManager sessionManager;
     private final ObservableList<BreadstuffEntity> breadstuffEntities = FXCollections.observableArrayList();
-
 
     @FXML
     public TableColumn<BreadstuffEntity, Integer> productId;
@@ -46,13 +51,13 @@ public class AddBreadstuffController {
     public TableView<BreadstuffEntity> tableView;
 
     @FXML
-    public TextField typeTextField;
+    public ComboBox<BreadstuffType> typeBox;
 
     @FXML
     public TextField nettoWeightTextField;
 
     @FXML
-    public TextField piecesPerPackageField;
+    public TextField piecesPerPackageTextField;
 
     @FXML
     public TextField energyValueTextField;
@@ -61,26 +66,27 @@ public class AddBreadstuffController {
     public TextField priceTextField;
 
     @FXML
-    public TextField quantityTextField;
-
-    @FXML
     public void initialize() {
         this.sessionManager = SessionManager.getInstance();
         createTableView();
+        typeBox.setItems(FXCollections.observableArrayList(BreadstuffType.values()));
     }
 
 
     public void createTableView() {
         tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue != null) {
-                addBreadstuff(newValue);
+                Integer quantity = showSelectQuantityDialog();
+                if(quantity != null) {
+                    addBreadstuff(newValue, quantity);
+                    displayInfoAlert("Products successfully added to new supply");
+                }
             }
         });
 
-        Session session = sessionManager.openSession();
+        Session session = sessionManager.getCurrentSession();
         Query<BreadstuffEntity> query = session.createQuery("FROM BreadstuffEntity", BreadstuffEntity.class);
         breadstuffEntities.addAll(query.getResultList());
-        sessionManager.closeSession();
 
         tableView.setItems(breadstuffEntities);
 
@@ -92,7 +98,7 @@ public class AddBreadstuffController {
         price.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getProductsEntity().getPrice()));
     }
 
-    private void addBreadstuff(BreadstuffEntity breadstuff) {
+    private Integer showSelectQuantityDialog() {
         Dialog<ButtonType> dialog = new Dialog<>();
 
         dialog.setTitle("Quantity");
@@ -112,19 +118,102 @@ public class AddBreadstuffController {
         hbox.getChildren().addAll(label, textField);
         dialog.getDialogPane().setContent(hbox);
 
-
-
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-//            if(addProductsController.supplyIsEmpty()) {
-//                return ControllerCommunicator.getInstance().getMsg();
-//            }
+            try {
+                int quantity = Integer.parseInt(textField.getText());
+
+                if (quantity >= 0) {
+                    return quantity;
+                }
+                displayErrorAlert("Quantity must be positive!");
+            } catch (NumberFormatException ex) {
+                displayErrorAlert("Incorrect number.");
+            }
+            return showSelectQuantityDialog();
         }
 
-//        return null;
+        return null;
+    }
+
+    private void addBreadstuff(BreadstuffEntity breadstuff, Integer quantity) {
+        StoredProcedureQuery procedureQuery = sessionManager.getCurrentSession().createStoredProcedureQuery("add_breadstuff").
+                registerStoredProcedureParameter("_type", String.class, ParameterMode.IN)
+                .registerStoredProcedureParameter("_netto_weight", Integer.class, ParameterMode.IN)
+                .registerStoredProcedureParameter("_pieces_per_package", Integer.class, ParameterMode.IN)
+                .registerStoredProcedureParameter("_energy_value", Integer.class, ParameterMode.IN)
+                .registerStoredProcedureParameter("_price", BigDecimal.class, ParameterMode.IN)
+                .registerStoredProcedureParameter("_supply_id", Integer.class, ParameterMode.IN)
+                .registerStoredProcedureParameter("_quantity", Integer.class, ParameterMode.IN)
+                .setParameter("_type", breadstuff.getType().toString())
+                .setParameter("_netto_weight", breadstuff.getNettoWeight())
+                .setParameter("_pieces_per_package", breadstuff.getPiecesPerPackage())
+                .setParameter("_energy_value", breadstuff.getEnergyValue())
+                .setParameter("_price", breadstuff.getProductsEntity().getPrice())
+                .setParameter("_supply_id", supplyId)
+                .setParameter("_quantity", quantity);
+        procedureQuery.execute();
+        anythingIsAdded = true;
+    }
+
+    public void addNewBreadstuffClicked(ActionEvent actionEvent) {
+        boolean allDataFilled = typeBox.getSelectionModel().getSelectedItem() != null &&
+                !nettoWeightTextField.getText().isBlank() && !piecesPerPackageTextField.getText().isBlank() &&
+                !energyValueTextField.getText().isBlank() && !priceTextField.getText().isBlank();
+
+        if (allDataFilled) {
+            try {
+                BreadstuffEntity breadstuff = new BreadstuffEntity();
+                breadstuff.setType(typeBox.getSelectionModel().getSelectedItem());
+                breadstuff.setNettoWeight(Integer.parseInt(nettoWeightTextField.getText()));
+                breadstuff.setPiecesPerPackage(Integer.parseInt(piecesPerPackageTextField.getText()));
+                breadstuff.setEnergyValue(Integer.parseInt(energyValueTextField.getText()));
+                breadstuff.setProductsEntity(new ProductsEntity());
+                breadstuff.getProductsEntity().setPrice(new BigDecimal(priceTextField.getText()));
+
+                Integer quantity = showSelectQuantityDialog();
+                if(quantity != null) {
+                    addBreadstuff(breadstuff, quantity);
+                    displayInfoAlert("Products successfully added to new supply");
+                }
+
+            } catch(NumberFormatException numberFormatException) {
+                displayErrorAlert("Incorrect data. Try again.");
+            } catch (Exception ex) {
+                displayErrorAlert("Operation failed");
+            }
+        } else {
+            displayErrorAlert("Fill all data to add new product.");
+        }
+
+        typeBox.setValue(null);
+        nettoWeightTextField.setText("");
+        piecesPerPackageTextField.setText("");
+        energyValueTextField.setText("");
+        priceTextField.setText("");
     }
 
     public void setSupplyId(int supplyId) {
         this.supplyId = supplyId;
+    }
+
+    public boolean isAnythingIsAdded() {
+        return anythingIsAdded;
+    }
+
+    private void displayInfoAlert(String contextText) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(null);
+        alert.setHeaderText(null);
+        alert.setContentText(contextText);
+        alert.showAndWait();
+    }
+
+    private void displayErrorAlert(String contextText) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(null);
+        alert.setHeaderText(null);
+        alert.setContentText(contextText);
+        alert.showAndWait();
     }
 }

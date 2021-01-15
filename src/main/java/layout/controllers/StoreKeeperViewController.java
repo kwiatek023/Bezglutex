@@ -10,10 +10,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Window;
@@ -103,6 +100,7 @@ public class StoreKeeperViewController {
             String paymentType = PaymentType.convertUILabelToDBLabel(showChoosePaymentDialog());
             SuppliesEntity suppliesEntity = addSupply(supplierId, paymentType);
             showAddProductsDialog(suppliesEntity.getSupplyId());
+            suppliesEntities.add(suppliesEntity);
 
             tx.commit();
 
@@ -111,7 +109,7 @@ public class StoreKeeperViewController {
             tx.rollback();
         }
         finally {
-            session.close();
+            sessionManager.closeSession();
         }
     }
 
@@ -204,7 +202,7 @@ public class StoreKeeperViewController {
        return supplyQuery.getSingleResult();
     }
 
-    private void showAddProductsDialog(int supplyId) {
+    private void showAddProductsDialog(int supplyId) throws Exception {
         Dialog<ButtonType> dialog = new Dialog<>();
 
         dialog.setWidth(950);
@@ -233,10 +231,21 @@ public class StoreKeeperViewController {
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.FINISH) {
             if(addProductsController.supplyIsEmpty()) {
-//                return ControllerCommunicator.getInstance().getMsg();
+                displayErrorAlert("Supply is empty now. Add products (breadstuff, pasta or desserts).");
+                showAddProductsDialog(supplyId);
             }
+
+            return;
         }
 
-//        return null;
+        throw new Exception();
+    }
+
+    private void displayErrorAlert(String contextText) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(null);
+        alert.setHeaderText(null);
+        alert.setContentText(contextText);
+        alert.showAndWait();
     }
 }
