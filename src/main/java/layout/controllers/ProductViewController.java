@@ -5,15 +5,21 @@ import database.entities.BreadstuffEntity;
 import database.entities.DessertsEntity;
 import database.entities.PastaEntity;
 import database.entities.ProductsEntity;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import layout.App;
 import layout.communication.ControllerCommunicator;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
+import java.io.IOException;
 
 public class ProductViewController {
   private SessionManager sessionManager;
+  private int orderId;
+  private int productId;
+  String productType;
 
   @FXML
   public BorderPane productBorderPane;
@@ -25,10 +31,11 @@ public class ProductViewController {
   public void initialize() {
     sessionManager = SessionManager.getInstance();
 
-    // msg format: "productId productType"
+    // msg format: "orderId productId productType"
     String[] msg = ControllerCommunicator.getInstance().getMsg().split(" ");
-    int productId = Integer.parseInt(msg[0]);
-    String productType = msg[1];
+    orderId = Integer.parseInt(msg[0]);
+    productId = Integer.parseInt(msg[1]);
+    productType = msg[2];
     
     Session session = sessionManager.openSession();
     switch (productType) {
@@ -69,6 +76,14 @@ public class ProductViewController {
         break;
       }
     }
+  }
 
+  public void returnClicked(ActionEvent actionEvent) {
+    try {
+      ControllerCommunicator.getInstance().setMsg("" + orderId);
+      App.setRoot("orderDetailsView");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 }

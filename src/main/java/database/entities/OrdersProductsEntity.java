@@ -5,18 +5,29 @@ import javax.persistence.*;
 @Entity
 @Table(name = "orders_products", schema = "bezglutex")
 public class OrdersProductsEntity {
-  private int orderId;
+  private OrdersProductsEntityPK id = new OrdersProductsEntityPK();
   private int quantity;
+  private OrdersEntity ordersEntity;
   private ProductsEntity productsEntity;
 
-  @Id
-  @Column(name = "order_id", nullable = false)
-  public int getOrderId() {
-    return orderId;
+  @ManyToOne
+  @MapsId("orderId")
+  @JoinColumn(name = "order_id")
+  public OrdersEntity getOrdersEntity() {
+    return ordersEntity;
   }
 
-  public void setOrderId(int orderId) {
-    this.orderId = orderId;
+  public void setOrdersEntity(OrdersEntity ordersEntity) {
+    this.ordersEntity = ordersEntity;
+  }
+
+  @EmbeddedId
+  public OrdersProductsEntityPK getId() {
+    return id;
+  }
+
+  public void setId(OrdersProductsEntityPK id) {
+    this.id = id;
   }
 
   @Basic
@@ -29,7 +40,8 @@ public class OrdersProductsEntity {
     this.quantity = quantity;
   }
 
-  @OneToOne
+  @ManyToOne
+  @MapsId("productId")
   @JoinColumn(name = "product_id")
   public ProductsEntity getProductsEntity() {
     return productsEntity;
@@ -46,7 +58,7 @@ public class OrdersProductsEntity {
 
     OrdersProductsEntity that = (OrdersProductsEntity) o;
 
-    if (orderId != that.orderId) return false;
+    if (id.getProductId() != id.getProductId()) return false;
     if (productsEntity != that.productsEntity) return false;
     if (quantity != that.quantity) return false;
 
@@ -55,7 +67,7 @@ public class OrdersProductsEntity {
 
   @Override
   public int hashCode() {
-    int result = orderId;
+    int result = id.getOrderId();
     result = 31 * result + productsEntity.getProductId();
     result = 31 * result + quantity;
     return result;

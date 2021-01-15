@@ -1,15 +1,16 @@
 package layout.controllers;
 
 import database.connection.SessionManager;
-import database.entities.OrdersEntity;
-import database.entities.OrdersProductsEntity;
-import database.entities.ProductsEntity;
+import database.entities.*;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import layout.App;
 import layout.communication.ControllerCommunicator;
@@ -18,34 +19,55 @@ import org.hibernate.query.Query;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.CallableStatement;
+import java.sql.Types;
 
 public class OrderDetailsViewController {
   private SessionManager sessionManager;
-  private final ObservableList<ProductsEntity> productsEntities = FXCollections.observableArrayList();
+  private int orderId;
+  private final ObservableList<OrdersProductsEntity> ordersProductsEntities = FXCollections.observableArrayList();
+  private OrdersEntity ordersEntity;
+
+  @FXML
+  public Label customerInfo;
+
+  @FXML
+  public Label total;
+
+  @FXML
+  public Button realizeButton;
 
   @FXML
   public BorderPane detailsBorderPane;
 
   @FXML
-  public TableView<ProductsEntity> tableView;
+  public TableView<OrdersProductsEntity> tableView;
 
   @FXML
-  public TableColumn<ProductsEntity, Integer> productId;
+  public TableColumn<OrdersProductsEntity, String> productId;
 
   @FXML
-  public TableColumn<ProductsEntity, String> type;
+  public TableColumn<OrdersProductsEntity, String> type;
 
   @FXML
-  public TableColumn<ProductsEntity, BigDecimal> price;
+  public TableColumn<OrdersProductsEntity, String> price;
+
+  @FXML
+  public TableColumn<OrdersProductsEntity, String> quantity;
+
+  @FXML
+  public TableColumn<OrdersProductsEntity, String> totalPrice;
 
   @FXML
   public void initialize() {
     sessionManager = SessionManager.getInstance();
 
+    orderId = Integer.parseInt(ControllerCommunicator.getInstance().getMsg());
+
     tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
       if (newValue != null) {
         try {
-          String msg = newValue.getProductId() + " " + newValue.getType();
+          String msg = orderId + " " + newValue.getProductsEntity().getProductId() + " " + newValue.getProductsEntity().getType();
           ControllerCommunicator.getInstance().setMsg(msg);
           App.setRoot("productView");
         } catch (IOException e) {
@@ -54,22 +76,93 @@ public class OrderDetailsViewController {
       }
     });
 
-    String msg = ControllerCommunicator.getInstance().getMsg();
 
-    int orderId = Integer.parseInt(msg);
+    findOrdersEntity();
+    ordersProductsEntities.addAll(ordersEntity.getOrdersProductsEntities());
 
+    productId.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getProductsEntity().getProductId())));
+    type.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getProductsEntity().getType().toString()));
+    price.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getProductsEntity().getPrice())));
+    quantity.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getQuantity())));
+    totalPrice.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(
+        cellData.getValue().getProductsEntity().getPrice().multiply(new BigDecimal(cellData.getValue().getQuantity())))));
+
+    tableView.setItems(ordersProductsEntities);
+
+    calculateTotal();
+    setCustomerData();
+
+    realizeButton.setVisible(!ordersEntity.getRealized());
+  }
+
+  private void findOrdersEntity() {
     Session session = sessionManager.openSession();
-    Query<ProductsEntity> query = session.createQuery("SELECT productsEntity" +
-        " FROM OrdersProductsEntity en WHERE en.orderId = (:orderId)", ProductsEntity.class);
+    Query<OrdersEntity> query = session.createQuery("FROM OrdersEntity WHERE orderId = (:orderId)", OrdersEntity.class);
     query.setParameter("orderId", orderId);
+    ordersEntity = query.getSingleResult();
+////    test
+//    System.out.println("findOrdersEntity: " + ordersEntity.getOrdersProductsEntities().size());
+//    System.out.println(ordersEntity.getOrderId());
+//    System.out.println(ordersEntity.getDate());
+//    System.out.println(ordersEntity.getPayment());
+//    System.out.println(ordersEntity.getRealized());
+//    for (OrdersProductsEntity ordersProductsEntity : ordersEntity.getOrdersProductsEntities()) {
+//      System.out.println(ordersProductsEntity.getProductsEntity().getProductId());
+//    }
+    sessionManager.closeSession();
+  }
 
-    productsEntities.addAll(query.getResultList());
+  private void calculateTotal() {
+    BigDecimal totalCost = BigDecimal.ZERO;
+    for (OrdersProductsEntity ordersProductsEntity : ordersProductsEntities) {
+      totalCost = totalCost.add(ordersProductsEntity.getProductsEntity().getPrice().multiply(new BigDecimal(ordersProductsEntity.getQuantity())));
+    }
+
+    total.setText("Total: " + totalCost+ "           ");
+  }
+  
+  private void setCustomerData() {
+    CustomersEntity customer = ordersEntity.getCustomersEntity();
+
+    customerInfo.setText("Customer data:\n" +
+                          "Firstname: " + customer.getFirstname() + "\n" +
+                          "Lastname: " + customer.getLastname() + "\n" +
+                          "Email: " + customer.getEmail() + "\n" +
+                          "NIP: " + customer.getNip() + "\n" +
+                          "Address: \n" +
+                          "Street: " + customer.getStreet() + "\n" +
+                          "City: " + customer.getCity() + "\n" +
+                          "Postal code: " + customer.getPostalCode() + "\n" +
+                          "Country: " + customer.getCountry() + "\n"
+    );
+  }
+
+  public void returnClicked(ActionEvent actionEvent) {
+    try {
+      App.setRoot("salesmanView");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void realizeClicked(ActionEvent actionEvent) {
+    Session session = sessionManager.openSession();
+    session.beginTransaction();
+
+    boolean success = session.doReturningWork(connection -> {
+      try (CallableStatement function = connection.prepareCall(
+            "{ ? = call realize_order(?) }")) {
+        function.registerOutParameter(1, Types.BOOLEAN);
+        function.setInt(2, orderId);
+        function.execute();
+        return function.getBoolean(1);
+      }
+    });
+
+    session.getTransaction().commit();
+
     sessionManager.closeSession();
 
-    tableView.setItems(productsEntities);
-
-    productId.setCellValueFactory(new PropertyValueFactory<>("productId"));
-    type.setCellValueFactory(new PropertyValueFactory<>("type"));
-    price.setCellValueFactory(new PropertyValueFactory<>("price"));
+    realizeButton.setVisible(!success);
   }
 }

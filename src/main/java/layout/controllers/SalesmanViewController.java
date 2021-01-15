@@ -2,6 +2,7 @@ package layout.controllers;
 
 import database.connection.SessionManager;
 import database.entities.OrdersEntity;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -21,6 +22,9 @@ public class SalesmanViewController {
     private SessionManager sessionManager;
 
     @FXML
+    public TableView<OrdersEntity> tableView;
+
+    @FXML
     public BorderPane browserBorderPane;
 
     @FXML
@@ -33,10 +37,13 @@ public class SalesmanViewController {
     public TableColumn<OrdersEntity, String> payment;
 
     @FXML
-    public TableView<OrdersEntity> tableView;
+    public TableColumn<OrdersEntity, String> realized;
 
     @FXML
-    public TableColumn<OrdersEntity, String> realized;
+    public TableColumn<OrdersEntity, String> firstname;
+
+    @FXML
+    public TableColumn<OrdersEntity, String> lastname;
 
     @FXML
     public void initialize() {
@@ -68,5 +75,10 @@ public class SalesmanViewController {
         date.setCellValueFactory(new PropertyValueFactory<>("date"));
         payment.setCellValueFactory(new PropertyValueFactory<>("payment"));
         realized.setCellValueFactory(new PropertyValueFactory<>("realized"));
+        firstname.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCustomersEntity().getFirstname()));
+        lastname.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCustomersEntity().getLastname()));
+
     }
+
+
 }
