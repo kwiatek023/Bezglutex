@@ -7,9 +7,10 @@ import javax.persistence.*;
 public class DessertsEntity {
   private int productId;
   private String name;
-  private byte dairyFree;
+  private boolean dairyFree;
   private int nettoWeight;
   private int energyValue;
+  private ProductsEntity productsEntity;
 
   @Id
   @Column(name = "product_id", nullable = false)
@@ -33,11 +34,11 @@ public class DessertsEntity {
 
   @Basic
   @Column(name = "dairy_free", nullable = false)
-  public byte getDairyFree() {
+  public boolean getDairyFree() {
     return dairyFree;
   }
 
-  public void setDairyFree(byte dairyFree) {
+  public void setDairyFree(boolean dairyFree) {
     this.dairyFree = dairyFree;
   }
 
@@ -61,6 +62,16 @@ public class DessertsEntity {
     this.energyValue = energyValue;
   }
 
+  @OneToOne
+  @JoinColumn(name = "product_id")
+  public ProductsEntity getProductsEntity() {
+    return productsEntity;
+  }
+
+  public void setProductsEntity(ProductsEntity productsEntity) {
+    this.productsEntity = productsEntity;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -81,9 +92,9 @@ public class DessertsEntity {
   public int hashCode() {
     int result = productId;
     result = 31 * result + (name != null ? name.hashCode() : 0);
-    result = 31 * result + (int) dairyFree;
     result = 31 * result + nettoWeight;
     result = 31 * result + energyValue;
+    result = dairyFree ? 31 * result + 1 : 31 * result;
     return result;
   }
 }
