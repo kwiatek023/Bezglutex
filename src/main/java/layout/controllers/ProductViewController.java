@@ -4,16 +4,12 @@ import database.connection.SessionManager;
 import database.entities.BreadstuffEntity;
 import database.entities.DessertsEntity;
 import database.entities.PastaEntity;
-import database.entities.ProductsEntity;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import layout.App;
 import layout.communication.ControllerCommunicator;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
-import java.io.IOException;
 
 public class ProductViewController {
   private SessionManager sessionManager;
@@ -75,15 +71,6 @@ public class ProductViewController {
         );
         break;
       }
-    }
-  }
-
-  public void returnClicked(ActionEvent actionEvent) {
-    try {
-      ControllerCommunicator.getInstance().setMsg("" + orderId);
-      App.setRoot("orderDetailsView");
-    } catch (IOException e) {
-      e.printStackTrace();
     }
   }
 }

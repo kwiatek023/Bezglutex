@@ -1,17 +1,19 @@
 package layout.controllers;
 
 import database.connection.SessionManager;
-import database.entities.*;
+import database.entities.CustomersEntity;
+import database.entities.OrdersEntity;
+import database.entities.OrdersProductsEntity;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Window;
 import layout.App;
 import layout.communication.ControllerCommunicator;
 import org.hibernate.Session;
@@ -21,6 +23,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.CallableStatement;
 import java.sql.Types;
+import java.util.Optional;
 
 public class OrderDetailsViewController {
   private SessionManager sessionManager;
@@ -65,14 +68,8 @@ public class OrderDetailsViewController {
     orderId = Integer.parseInt(ControllerCommunicator.getInstance().getMsg());
 
     tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
-      if (newValue != null) {
-        try {
-          String msg = orderId + " " + newValue.getProductsEntity().getProductId() + " " + newValue.getProductsEntity().getType();
-          ControllerCommunicator.getInstance().setMsg(msg);
-          App.setRoot("productView");
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
+      if(newValue != null) {
+        showDetails(newValue);
       }
     });
 
@@ -93,6 +90,37 @@ public class OrderDetailsViewController {
     setCustomerData();
 
     realizeButton.setVisible(!ordersEntity.getRealized());
+  }
+
+  private void showDetails(OrdersProductsEntity ordersProducts) {
+    Dialog<ButtonType> dialog = new Dialog<>();
+
+    dialog.setWidth(300);
+    dialog.setHeight(300);
+    dialog.setTitle("Product details");
+    dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
+    Window window = dialog.getDialogPane().getScene().getWindow();
+    window.setOnCloseRequest(event -> window.hide());
+
+    String msg = orderId + " " + ordersProducts.getProductsEntity().getProductId() + " " + ordersProducts.getProductsEntity().getType();
+    ControllerCommunicator.getInstance().setMsg(msg);
+
+    FXMLLoader fxmlLoader = new FXMLLoader();
+    fxmlLoader.setLocation(App.class.getResource("productView.fxml"));
+
+    try {
+      Parent dialogContent = fxmlLoader.load();
+      dialog.getDialogPane().setContent(dialogContent);
+    } catch (IOException e) {
+      System.out.println("Couldn't load the dialog");
+      e.printStackTrace();
+    }
+
+    Optional<ButtonType> result = dialog.showAndWait();
+    if (result.isPresent() && result.get() == ButtonType.CLOSE) {
+      window.hide();
+    }
   }
 
   private void findOrdersEntity() {

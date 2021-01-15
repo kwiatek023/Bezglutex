@@ -9,12 +9,6 @@
     <center>
         <Label fx:id="productInfo"/>
     </center>
-    <bottom>
-        <HBox alignment="TOP_RIGHT">
-            <!--suppress JavaFxUnresolvedFxIdReference -->
-            <Button fx:id="returnButton" alignment="BOTTOM_RIGHT" mnemonicParsing="false" text="Return" onAction="#returnClicked"/>
-        </HBox>
-    </bottom>
     <stylesheets>
         <URL value="@configure.css"/>
     </stylesheets>
