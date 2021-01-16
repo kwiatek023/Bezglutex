@@ -5,12 +5,16 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 public class SessionFactoryBuilder {
+    private String sessionFactoryOwner;
+
     public SessionFactory buildSessionFactory(String login, String password) {
         Configuration configuration = new Configuration();
 
         System.setProperty("hibernate.connection.username", login);
         System.setProperty("hibernate.connection.password", password);
         configuration.setProperties(System.getProperties());
+
+        sessionFactoryOwner = login;
 
         SessionFactory sessionFactory = configuration.configure().
                 addAnnotatedClass(BreadstuffEntity.class).
@@ -29,5 +33,9 @@ public class SessionFactoryBuilder {
                 buildSessionFactory();
 
         return sessionFactory;
+    }
+
+    String getSessionFactoryOwner() {
+        return sessionFactoryOwner;
     }
 }
