@@ -163,9 +163,9 @@ public class AddBreadstuffController {
 
         if (allDataFilled) {
             try {
-                Integer nettoWeight = Integer.parseInt(nettoWeightTextField.getText());
-                Integer piecesPerPackage = Integer.parseInt(piecesPerPackageTextField.getText());
-                Integer energyValue = Integer.parseInt(energyValueTextField.getText());
+                int nettoWeight = Integer.parseInt(nettoWeightTextField.getText());
+                int piecesPerPackage = Integer.parseInt(piecesPerPackageTextField.getText());
+                int energyValue = Integer.parseInt(energyValueTextField.getText());
                 BigDecimal price = new BigDecimal(priceTextField.getText());
                 Integer quantity = showSelectQuantityDialog();
 

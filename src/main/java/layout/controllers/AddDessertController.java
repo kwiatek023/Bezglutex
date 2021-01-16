@@ -163,20 +163,29 @@ public class AddDessertController {
 
     if (allDataFilled) {
       try {
-        DessertsEntity dessert = new DessertsEntity();
-        dessert.setName(nameTextField.getText());
-        dessert.setDairyFree(dairyFreeBox.getSelectionModel().getSelectedItem());
-        dessert.setNettoWeight(Integer.parseInt(nettoWeightTextField.getText()));
-        dessert.setEnergyValue(Integer.parseInt(energyValueTextField.getText()));
-        dessert.setProductsEntity(new ProductsEntity());
-        dessert.getProductsEntity().setPrice(new BigDecimal(priceTextField.getText()));
-
+        int nettoWeight = Integer.parseInt(nettoWeightTextField.getText());
+        boolean dairyFree = dairyFreeBox.getValue();
+        int energyValue = Integer.parseInt(energyValueTextField.getText());
+        BigDecimal price = new BigDecimal(priceTextField.getText());
         Integer quantity = showSelectQuantityDialog();
-        if(quantity != null) {
+
+        boolean validPrice = (price.compareTo(BigDecimal.ZERO) > -1) && (price.compareTo(BigDecimal.valueOf(1000)) < 1);
+        boolean allDataValid = nettoWeight > 0 && energyValue > 0
+            && validPrice && quantity != null;
+
+        if (allDataValid) {
+          DessertsEntity dessert = new DessertsEntity();
+          dessert.setName(nameTextField.getText());
+          dessert.setDairyFree(dairyFree);
+          dessert.setNettoWeight(nettoWeight);
+          dessert.setEnergyValue(energyValue);
+          dessert.setProductsEntity(new ProductsEntity());
+          dessert.getProductsEntity().setPrice(price);
           addDessert(dessert, quantity);
           displayInfoAlert("Products successfully added to new supply");
+        } else {
+          displayErrorAlert("Incorrect data. Try again.");
         }
-
       } catch(NumberFormatException numberFormatException) {
         displayErrorAlert("Incorrect data. Try again.");
       } catch (Exception ex) {
