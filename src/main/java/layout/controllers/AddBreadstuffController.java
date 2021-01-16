@@ -77,7 +77,7 @@ public class AddBreadstuffController {
         tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue != null) {
                 Integer quantity = showSelectQuantityDialog();
-                if(quantity != null) {
+                if (quantity != null) {
                     addBreadstuff(newValue, quantity);
                     displayInfoAlert("Products successfully added to new supply");
                 }
@@ -163,21 +163,32 @@ public class AddBreadstuffController {
 
         if (allDataFilled) {
             try {
-                BreadstuffEntity breadstuff = new BreadstuffEntity();
-                breadstuff.setType(typeBox.getSelectionModel().getSelectedItem());
-                breadstuff.setNettoWeight(Integer.parseInt(nettoWeightTextField.getText()));
-                breadstuff.setPiecesPerPackage(Integer.parseInt(piecesPerPackageTextField.getText()));
-                breadstuff.setEnergyValue(Integer.parseInt(energyValueTextField.getText()));
-                breadstuff.setProductsEntity(new ProductsEntity());
-                breadstuff.getProductsEntity().setPrice(new BigDecimal(priceTextField.getText()));
-
+                Integer nettoWeight = Integer.parseInt(nettoWeightTextField.getText());
+                Integer piecesPerPackage = Integer.parseInt(piecesPerPackageTextField.getText());
+                Integer energyValue = Integer.parseInt(energyValueTextField.getText());
+                BigDecimal price = new BigDecimal(priceTextField.getText());
                 Integer quantity = showSelectQuantityDialog();
-                if(quantity != null) {
+
+                boolean validPrice = (price.compareTo(BigDecimal.ZERO) > -1) && (price.compareTo(BigDecimal.valueOf(1000)) < 1);
+                boolean allDataValid = nettoWeight > 0 && piecesPerPackage > 0 && energyValue > 0
+                        && validPrice  && quantity != null;
+
+                if (allDataValid) {
+                    BreadstuffEntity breadstuff = new BreadstuffEntity();
+                    breadstuff.setType(typeBox.getSelectionModel().getSelectedItem());
+                    breadstuff.setNettoWeight(nettoWeight);
+                    breadstuff.setPiecesPerPackage(piecesPerPackage);
+                    breadstuff.setEnergyValue(energyValue);
+                    breadstuff.setProductsEntity(new ProductsEntity());
+                    breadstuff.getProductsEntity().setPrice(new BigDecimal(priceTextField.getText()));
+
+
                     addBreadstuff(breadstuff, quantity);
                     displayInfoAlert("Products successfully added to new supply");
+                } else {
+                    displayErrorAlert("Incorrect data. Try again.");
                 }
-
-            } catch(NumberFormatException numberFormatException) {
+            } catch (NumberFormatException numberFormatException) {
                 displayErrorAlert("Incorrect data. Try again.");
             } catch (Exception ex) {
                 displayErrorAlert("Operation failed");
