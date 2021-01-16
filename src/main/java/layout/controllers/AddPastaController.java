@@ -163,18 +163,29 @@ public class AddPastaController {
 
     if (allDataFilled) {
       try {
-        PastaEntity pasta = new PastaEntity();
-        pasta.setType(typeBox.getSelectionModel().getSelectedItem());
-        pasta.setNettoWeight(Integer.parseInt(nettoWeightTextField.getText()));
-        pasta.setEnergyValue(Integer.parseInt(energyValueTextField.getText()));
-        pasta.setBoilTime(Integer.parseInt(boilTimeTextField.getText()));
-        pasta.setProductsEntity(new ProductsEntity());
-        pasta.getProductsEntity().setPrice(new BigDecimal(priceTextField.getText()));
-
+        int nettoWeight = Integer.parseInt(nettoWeightTextField.getText());
+        int boilTime = Integer.parseInt(boilTimeTextField.getText());
+        int energyValue = Integer.parseInt(energyValueTextField.getText());
+        BigDecimal price = new BigDecimal(priceTextField.getText());
         Integer quantity = showSelectQuantityDialog();
-        if(quantity != null) {
+
+        boolean validPrice = (price.compareTo(BigDecimal.ZERO) > -1) && (price.compareTo(BigDecimal.valueOf(1000)) < 1);
+        boolean allDataValid = nettoWeight > 0 && boilTime > 0 && energyValue > 0
+            && validPrice  && quantity != null;
+
+        if (allDataValid) {
+          PastaEntity pasta = new PastaEntity();
+          pasta.setType(typeBox.getSelectionModel().getSelectedItem());
+          pasta.setNettoWeight(nettoWeight);
+          pasta.setEnergyValue(energyValue);
+          pasta.setBoilTime(boilTime);
+          pasta.setProductsEntity(new ProductsEntity());
+          pasta.getProductsEntity().setPrice(price);
+
           addPasta(pasta, quantity);
           displayInfoAlert("Products successfully added to new supply");
+        } else {
+          displayErrorAlert("Incorrect data. Try again.");
         }
 
       } catch(NumberFormatException numberFormatException) {
