@@ -9,11 +9,9 @@ public class ConcreteLayoutFactory implements LayoutFactory {
             case salesman: {
                 return "salesmanView";
             }
-           case store_keeper: {
-               return "storeKeeperView";
-           }
+           case store_keeper:
            case store_manager: {
-               return "storeManagerView";
+               return "storeKeeperView";
            }
            case admin: {
                return "adminView";

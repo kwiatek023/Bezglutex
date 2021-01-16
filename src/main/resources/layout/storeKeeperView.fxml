@@ -34,12 +34,20 @@
         </TableView>
     </center>
     <bottom>
-        <HBox alignment="TOP_RIGHT">
-            <!--suppress JavaFxUnresolvedFxIdReference -->
-            <Button fx:id="storageButton" alignment="BOTTOM_RIGHT" mnemonicParsing="false" text="See storage availability" onAction="#seeStorageClicked"/>
-            <!--suppress JavaFxUnresolvedFxIdReference -->
-            <Button fx:id="addNewSupplyButton" alignment="BOTTOM_RIGHT" mnemonicParsing="false" text="Add new supply" onAction="#addNewSupplyClicked"/>
-        </HBox>
+        <VBox>
+            <HBox alignment="TOP_CENTER">
+                <TextField fx:id="supplyToDelete" alignment="CENTER" promptText="Supply id"/>
+                <Button fx:id="deleteSupplyButton" alignment="CENTER" mnemonicParsing="false" text="Delete supply" onAction="#deleteSupplyClicked"/>
+            </HBox>
+            <HBox alignment="TOP_RIGHT">
+                <!--suppress JavaFxUnresolvedFxIdReference -->
+                <Button fx:id="storageButton" alignment="BOTTOM_RIGHT" mnemonicParsing="false"
+                        text="See storage availability" onAction="#seeStorageClicked"/>
+                <!--suppress JavaFxUnresolvedFxIdReference -->
+                <Button fx:id="addNewSupplyButton" alignment="BOTTOM_RIGHT" mnemonicParsing="false"
+                        text="Add new supply" onAction="#addNewSupplyClicked"/>
+            </HBox>
+        </VBox>
     </bottom>
     <stylesheets>
         <URL value="@configure.css"/>
