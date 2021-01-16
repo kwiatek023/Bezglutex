@@ -6,12 +6,12 @@
 <?import java.net.URL?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="layout.controllers.AddBreadstuffController">
+            fx:controller="layout.controllers.AddPastaController">
 
     <top>
         <VBox alignment="TOP_CENTER" spacing="10.0">
             <!--suppress JavaFxUnresolvedFxIdReference -->
-            <Label fx:id="infoLabel" text="If you want to add breadstuff which has been sold in Bezglutex before, select this from below list: "/>
+            <Label fx:id="infoLabel" text="If you want to add pasta which has been sold in Bezglutex before, select this from below list: "/>
             <padding>
                 <Insets top="10" bottom="10" left="10" right="10"/>
             </padding>
@@ -24,10 +24,10 @@
             </columnResizePolicy>
             <columns>
                 <TableColumn fx:id="productId" text="Product id"/>
-                <TableColumn fx:id="type" text="Breadstuff type"/>
+                <TableColumn fx:id="type" text="Pasta type"/>
                 <TableColumn fx:id="nettoWeight" text="Netto weight"/>
-                <TableColumn fx:id="piecesPerPackage" text="Pieces per package"/>
                 <TableColumn fx:id="energyValue" text="Energy value"/>
+                <TableColumn fx:id="boilTime" text="Boil time"/>
                 <TableColumn fx:id="price" text="Price"/>
             </columns>
         </TableView>
@@ -36,14 +36,14 @@
         <VBox>
             <Label fx:id="infoLabel2" text="If in supply appeared new products you can add them: "/>
             <HBox alignment="BOTTOM_CENTER">
-                <ComboBox fx:id="typeBox" promptText="Type of breadstuff"/>
+                <ComboBox fx:id="typeBox" promptText="Type of pasta"/>
                 <TextField fx:id="nettoWeightTextField" promptText="Netto weight"/>
-                <TextField fx:id="piecesPerPackageTextField" promptText="Pieces per package"/>
+                <TextField fx:id="boilTimeTextField" promptText="Pieces per package"/>
             </HBox>
             <HBox alignment="BOTTOM_CENTER">
                 <TextField fx:id="energyValueTextField" promptText="Energy value"/>
                 <TextField fx:id="priceTextField" promptText="Price"/>
-                <Button fx:id="addNewBreadstuffButton" alignment="BOTTOM_RIGHT" mnemonicParsing="false" text="Add product" onAction="#addNewBreadstuffClicked"/>
+                <Button fx:id="addNewPastaButton" alignment="BOTTOM_RIGHT" mnemonicParsing="false" text="Add product" onAction="#addNewPastaClicked"/>
             </HBox>
             <padding>
                 <Insets top="10" bottom="10" left="10" right="10"/>
