@@ -189,22 +189,20 @@ public class AdminViewController {
 
             String filePath = file.getAbsolutePath() + "/bezglutex-backup-" + currentDate;
 
-            String executedCmd = "mysqldump -u admin -padmin --databases bezglutex";
+            String executedCmd = "mysqldump -u admin -padmin -B bezglutex -r " + filePath + ".sql";
 
             try {
                 Process runtimeProcess = Runtime.getRuntime().exec(executedCmd);
-                InputStream inputStream = new BufferedInputStream(runtimeProcess.getInputStream());
-                OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(filePath));
+                int complete = runtimeProcess.waitFor();
 
-                int counter;
-                byte[] bytes = new byte[1024];
-                while ((counter = inputStream.read(bytes)) != -1) {
-                    outputStream.write(bytes, 0, counter);
+                if (complete == 0) {
+                    displayInfoAlert("Backup successfully made");
+                } else {
+                    displayInfoAlert("Backup failed.");
                 }
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
-            displayInfoAlert("Backup successfully made");
         } else {
             displayErrorAlert("You have to select directory to save backup!");
         }
@@ -216,15 +214,21 @@ public class AdminViewController {
         File file = fileChooser.showOpenDialog(App.getStage());
 
         if (file != null) {
-            String executedCmd = "mysql --user=admin --password=admin bezglutex -e source " + file.getAbsolutePath();
+            String[] restoreCmd = new String[]{"mysql", "--user=admin", "--password=admin", "-e", "source " + file.getAbsolutePath()};
 
+            Process runtimeProcess;
             try {
-                Runtime.getRuntime().exec(executedCmd);
-            } catch (IOException e) {
+                runtimeProcess = Runtime.getRuntime().exec(restoreCmd);
+                int complete = runtimeProcess.waitFor();
+                if (complete == 0) {
+                    displayInfoAlert("Database successfully restored");
+                    App.setRoot("adminView");
+                } else {
+                    displayInfoAlert("Restore failed");
+                }
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
-
-            displayInfoAlert("Database successfully restored");
         } else {
             displayErrorAlert("You have to select backup to restore database!");
         }
