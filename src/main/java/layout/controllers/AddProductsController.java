@@ -58,10 +58,70 @@ public class AddProductsController {
     }
 
     public void addPasta(ActionEvent actionEvent) {
+        Dialog<ButtonType> dialog = new Dialog<>();
 
+        dialog.setWidth(950);
+        dialog.setHeight(800);
+        dialog.setTitle("Adding pasta");
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
+        Window window = dialog.getDialogPane().getScene().getWindow();
+        window.setOnCloseRequest(event -> window.hide());
+
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(App.class.getResource("addPastaView.fxml"));
+
+        AddPastaController addPastaController = null;
+        try {
+            Parent dialogContent = fxmlLoader.load();
+            addPastaController = fxmlLoader.getController();
+            addPastaController.setSupplyId(supplyId);
+            dialog.getDialogPane().setContent(dialogContent);
+        } catch (IOException e) {
+            System.out.println("Couldn't load the dialog");
+            e.printStackTrace();
+        }
+
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.CLOSE) {
+            if(addPastaController.isAnythingIsAdded()) {
+                supplyIsEmpty = false;
+            }
+        }
     }
 
     public void addDesserts(ActionEvent actionEvent) {
+        Dialog<ButtonType> dialog = new Dialog<>();
 
+        dialog.setWidth(950);
+        dialog.setHeight(800);
+        dialog.setTitle("Adding dessert");
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
+        Window window = dialog.getDialogPane().getScene().getWindow();
+        window.setOnCloseRequest(event -> window.hide());
+
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(App.class.getResource("addDessertView.fxml"));
+
+        AddDessertController addDessertController = null;
+        try {
+            Parent dialogContent = fxmlLoader.load();
+            addDessertController = fxmlLoader.getController();
+            addDessertController.setSupplyId(supplyId);
+            dialog.getDialogPane().setContent(dialogContent);
+        } catch (IOException e) {
+            System.out.println("Couldn't load the dialog");
+            e.printStackTrace();
+        }
+
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.CLOSE) {
+            if(addDessertController.isAnythingIsAdded()) {
+                supplyIsEmpty = false;
+            }
+        }
     }
 }

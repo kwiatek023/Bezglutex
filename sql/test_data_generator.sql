@@ -91,7 +91,7 @@ BEGIN
                         'Kwiatowa', 'Kolorowa', 'Dzika', 'Śliczna', 'Lazurowa', 'Mikorska', 'Topolowa', 'Prusa'), ' ', SUBSTRING('1234567890', FLOOR(1 + RAND() * (10 - 1 + 1)), FLOOR(1 + RAND() * (2 - 1 + 1))));
 
             SET _email = CONCAT(LOWER(_name), '@gmail.com');
-            CALL add_supplier(_name, _NIP, _country, _city, _street, _postal_code, _email);
+            CALL add_supplier(_name, _NIP, _country, _city, _street, _postal_code, _email, @id);
             SET i = i + 1;
         END WHILE;
 END $$
@@ -110,7 +110,7 @@ BEGIN
         DO
             SET _supplier_id = (i % 15) + 1;
             SET _payment = ELT(FLOOR(1 + RAND() * (2 - 1 + 1)), 'bank_transfer', 'on_delivery');
-            CALL add_supply(_supplier_id, _payment);
+            CALL add_supply(_supplier_id, _payment, @id);
             SET i = i + 1;
     END WHILE;
 
