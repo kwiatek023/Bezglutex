@@ -48,6 +48,12 @@ public class StoreKeeperViewController {
     public TableColumn<SuppliesEntity, String> supplierName;
 
     @FXML
+    public TextField supplyToDelete;
+
+    @FXML
+    public Button deleteSupplyButton;
+
+    @FXML
     public void initialize() {
         this.sessionManager = SessionManager.getInstance();
         createTableView();
@@ -78,6 +84,14 @@ public class StoreKeeperViewController {
         date.setCellValueFactory(new PropertyValueFactory<>("date"));
         payment.setCellValueFactory(new PropertyValueFactory<>("payment"));
         supplierName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getSuppliersEntity().getName()));
+
+        boolean isStoreManager = isStoreManager();
+        supplyToDelete.setVisible(isStoreManager);
+        deleteSupplyButton.setVisible(isStoreManager);
+    }
+
+    private boolean isStoreManager() {
+        return (sessionManager.getSessionFactoryOwner().equals("store_manager"));
     }
 
     public void seeStorageClicked(ActionEvent actionEvent) {
@@ -105,6 +119,7 @@ public class StoreKeeperViewController {
             tx.commit();
 
         } catch (Exception ex) {
+            System.out.println("joosssssssssssssssssssssssssssssssssssjo");
             ex.printStackTrace();
             tx.rollback();
         }
@@ -241,11 +256,73 @@ public class StoreKeeperViewController {
         throw new Exception();
     }
 
+    public void deleteSupplyClicked(ActionEvent actionEvent) {
+        if (!supplyToDelete.getText().isBlank()) {
+            String supplyId = supplyToDelete.getText();
+            String message = "Do you confirm you want to remove supply with id \"" + supplyId + "\"?";
+
+            if (confirm(message)) {
+                try {
+                    deleteSupply(supplyId);
+                    displayInfoAlert("Supply with id \"" + supplyId + "\" successfully removed.");
+                } catch (Exception ex) {
+                    displayErrorAlert("Supply with id \"" + supplyId + "\" doesn't exists.");
+                }
+            }
+        } else {
+            displayErrorAlert("You should enter supply id in order to remove supply.");
+        }
+
+        supplyToDelete.setText("");
+    }
+
+    private void deleteSupply(String supplyId) throws Exception {
+        SuppliesEntity supplyToRemove = null;
+        int id = Integer.parseInt(supplyId);
+
+        for (SuppliesEntity supply: suppliesEntities) {
+            if (supply.getSupplyId() == id) {
+                supplyToRemove = supply;
+                break;
+            }
+        }
+
+        if(supplyToRemove == null) {
+            throw new Exception();
+        }
+
+        Session session = sessionManager.openSession();
+        session.beginTransaction();
+        session.remove(supplyToRemove);
+        session.getTransaction().commit();
+        sessionManager.closeSession();
+
+        suppliesEntities.remove(supplyToRemove);
+    }
+
+    private void displayInfoAlert(String contextText) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(null);
+        alert.setHeaderText(null);
+        alert.setContentText(contextText);
+        alert.showAndWait();
+    }
+
     private void displayErrorAlert(String contextText) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(null);
         alert.setHeaderText(null);
         alert.setContentText(contextText);
         alert.showAndWait();
+    }
+
+    private boolean confirm(String contextText) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setHeaderText(null);
+        alert.setContentText(contextText);
+
+        alert.showAndWait();
+
+        return alert.getResult() == ButtonType.OK;
     }
 }

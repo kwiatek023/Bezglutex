@@ -93,4 +93,8 @@ public class SessionManager {
     public Session getCurrentSession() {
         return currentSession;
     }
+
+    public String getSessionFactoryOwner() {
+        return sessionFactoryBuilder.getSessionFactoryOwner();
+    }
 }
