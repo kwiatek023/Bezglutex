@@ -53,9 +53,9 @@
     <bottom>
         <HBox alignment="TOP_RIGHT">
             <!--suppress JavaFxUnresolvedFxIdReference -->
-            <Button fx:id="returnButton" alignment="BOTTOM_RIGHT" mnemonicParsing="false" text="Return" onAction="#returnClicked"/>
-            <!--suppress JavaFxUnresolvedFxIdReference -->
             <Button fx:id="realizeButton" alignment="BOTTOM_RIGHT" mnemonicParsing="false" text="Realize" onAction="#realizeClicked"/>
+            <!--suppress JavaFxUnresolvedFxIdReference -->
+            <Button fx:id="returnButton" alignment="BOTTOM_RIGHT" mnemonicParsing="false" text="Return" onAction="#returnClicked"/>
         </HBox>
     </bottom>
     <stylesheets>

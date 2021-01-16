@@ -5,21 +5,29 @@ import database.entities.OrdersEntity;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import layout.App;
 import layout.communication.ControllerCommunicator;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
+import org.junit.jupiter.api.Order;
 
 import java.io.IOException;
 
 public class SalesmanViewController {
     private final ObservableList<OrdersEntity> ordersEntities = FXCollections.observableArrayList();
+
     private SessionManager sessionManager;
+
+    @FXML
+    public Label findOrderLabel;
+
+    @FXML
+    public TextField orderNumberTextField;
 
     @FXML
     public TableView<OrdersEntity> tableView;
@@ -53,15 +61,7 @@ public class SalesmanViewController {
 
     public void createTableView() {
         tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
-            if (newValue != null) {
-                try {
-                    String msg = "" + newValue.getOrderId();
-                    ControllerCommunicator.getInstance().setMsg(msg);
-                    App.setRoot("orderDetailsView");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+                showDetails(newValue);
         });
 
         Session session = sessionManager.openSession();
@@ -80,5 +80,55 @@ public class SalesmanViewController {
 
     }
 
+    private void showDetails(OrdersEntity newValue) {
+        if (newValue != null) {
+            try {
+                String msg = "" + newValue.getOrderId();
+                ControllerCommunicator.getInstance().setMsg(msg);
+                App.setRoot("orderDetailsView");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            displayErrorAlert("No order found.");
+        }
+    }
 
+
+    public void findOrderButtonClicked(ActionEvent actionEvent) {
+        int orderId = 0;
+        OrdersEntity order = null;
+
+        if (!orderNumberTextField.getText().isBlank()) {
+            try {
+                orderId = Integer.parseInt(orderNumberTextField.getText());
+            } catch (NumberFormatException ex) {
+                displayErrorAlert("Wrong order number");
+                return;
+            }
+
+            for (OrdersEntity ordersEntity: ordersEntities) {
+                if (ordersEntity.getOrderId() == orderId) {
+                    order = ordersEntity;
+                    orderId = ordersEntity.getOrderId();
+                    break;
+                }
+            }
+        }
+
+        if (orderId > 0) {
+            showDetails(order);
+            return;
+        }
+
+        displayErrorAlert("No order found.");
+    }
+
+    private void displayErrorAlert(String errorMsg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(null);
+        alert.setHeaderText(null);
+        alert.setContentText(errorMsg);
+        alert.showAndWait();
+    }
 }

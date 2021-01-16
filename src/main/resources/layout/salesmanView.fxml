@@ -2,6 +2,7 @@
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="layout.controllers.SalesmanViewController"
@@ -29,6 +30,18 @@
             </columns>
         </TableView>
     </center>
+    <bottom>
+        <VBox alignment="TOP_CENTER" spacing="10.0">
+            <HBox alignment="CENTER">
+                <TextField fx:id="orderNumberTextField" alignment="CENTER" promptText="Order number"/>
+                <!--suppress JavaFxUnresolvedFxIdReference -->
+                <Button fx:id="findOrderButton" alignment="CENTER" mnemonicParsing="false" text="Find order" onAction="#findOrderButtonClicked"/>
+            </HBox>
+            <padding>
+                <Insets top="10" bottom="10" left="10" right="10"/>
+            </padding>
+        </VBox>
+    </bottom>
     <stylesheets>
         <URL value="@configure.css"/>
     </stylesheets>
