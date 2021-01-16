@@ -12,7 +12,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Window;
 import layout.App;
 import layout.communication.ControllerCommunicator;
@@ -125,15 +124,6 @@ public class OrderDetailsViewController {
     Query<OrdersEntity> query = session.createQuery("FROM OrdersEntity WHERE orderId = (:orderId)", OrdersEntity.class);
     query.setParameter("orderId", orderId);
     ordersEntity = query.getSingleResult();
-////    test
-//    System.out.println("findOrdersEntity: " + ordersEntity.getOrdersProductsEntities().size());
-//    System.out.println(ordersEntity.getOrderId());
-//    System.out.println(ordersEntity.getDate());
-//    System.out.println(ordersEntity.getPayment());
-//    System.out.println(ordersEntity.getRealized());
-//    for (OrdersProductsEntity ordersProductsEntity : ordersEntity.getOrdersProductsEntities()) {
-//      System.out.println(ordersProductsEntity.getProductsEntity().getProductId());
-//    }
     sessionManager.closeSession();
   }
 
