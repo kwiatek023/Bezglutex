@@ -46,7 +46,7 @@ BEGIN
                              SUBSTRING('1234567890', FLOOR(1 + RAND() * (10 - 1 + 1)), 1),
                              SUBSTRING('1234567890', FLOOR(1 + RAND() * (10 - 1 + 1)), 1));
             SET _street = CONCAT( ELT(FLOOR(1 + RAND() * (13 - 1 + 1)), 'Nowa', 'Długa', 'Krótka', 'Poziomkowa', 'Piękna',
-                        'Kwiatowa', 'Kolorowa', 'Dzika', 'Śliczna', 'Lazurowa', 'Mikorska', 'Topolowa', 'Prusa'), ' ', SUBSTRING('1234567890', FLOOR(1 + RAND() * (10 - 1 + 1)), FLOOR(1 + RAND() * (2 - 1 + 1))));
+                        'Kwiatowa', 'Kolorowa', 'Dzika', 'Śliczna', 'Lazurowa', 'Mikorska', 'Topolowa', 'Prusa'), ' ', SUBSTRING('123456789', FLOOR(1 + RAND() * (10 - 1 + 1)), FLOOR(1 + RAND() * (2 - 1 + 1))));
 
             SET _email = CONCAT(LOWER(_firstname), '.', LOWER(_lastname), '@gmail.com');
             INSERT INTO customers(firstname, lastname, NIP, country, city, street, postal_code, email) VALUES (_firstname, _lastname, _NIP, _country, _city, _street, _postal_code, _email);
@@ -88,7 +88,7 @@ BEGIN
                              SUBSTRING('1234567890', FLOOR(1 + RAND() * (10 - 1 + 1)), 1),
                              SUBSTRING('1234567890', FLOOR(1 + RAND() * (10 - 1 + 1)), 1));
             SET _street = CONCAT( ELT(FLOOR(1 + RAND() * (13 - 1 + 1)), 'Nowa', 'Długa', 'Krótka', 'Poziomkowa', 'Piękna',
-                        'Kwiatowa', 'Kolorowa', 'Dzika', 'Śliczna', 'Lazurowa', 'Mikorska', 'Topolowa', 'Prusa'), ' ', SUBSTRING('1234567890', FLOOR(1 + RAND() * (10 - 1 + 1)), FLOOR(1 + RAND() * (2 - 1 + 1))));
+                        'Kwiatowa', 'Kolorowa', 'Dzika', 'Śliczna', 'Lazurowa', 'Mikorska', 'Topolowa', 'Prusa'), ' ', SUBSTRING('123456789', FLOOR(1 + RAND() * (10 - 1 + 1)), FLOOR(1 + RAND() * (2 - 1 + 1))));
 
             SET _email = CONCAT(LOWER(_name), '@gmail.com');
             CALL add_supplier(_name, _NIP, _country, _city, _street, _postal_code, _email, @id);

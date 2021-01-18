@@ -119,8 +119,7 @@ public class StoreKeeperViewController {
             tx.commit();
 
         } catch (Exception ex) {
-            System.out.println("joosssssssssssssssssssssssssssssssssssjo");
-            ex.printStackTrace();
+//            ex.printStackTrace();
             tx.rollback();
         }
         finally {
